@@ -3,6 +3,10 @@ Very Configurable TextChat Shortcuts
 
 **For the Official Download: https://thunderstore.io/c/lethal-company/p/MushroomMan/QuickChat/**
 
+# Build Requirements
+Microsoft Visual Studio 2022 or Above
+.NET Framework 4.8.1 or Higher
+
 # Thunderstore Description:
 # Quick Chat
 
