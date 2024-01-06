@@ -1,19 +1,16 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+
+using BepInEx.Configuration;
 
 using LethalConfig;
 using LethalConfig.ConfigItems.Options;
 using LethalConfig.ConfigItems;
 
-using System.Collections;
-using System.Collections.Generic;
-using BepInEx.Logging;
-using BepInEx.Configuration;
-using System;
 
 namespace QuickChat
 {
 
-	internal class ConfigLoader
+	internal class ShortcutHandler
 	{
 
 		internal static ConfigEntry<bool> QuickChatUseAdvanced;
@@ -30,9 +27,9 @@ namespace QuickChat
 
 		internal static void Init()
 		{
-			QuickChatUseAdvanced = QuickChatBase.ConfigR.Bind("General", "Use Advanced Shortcut Definition", false, "Allows user to define shortcuts with one Text Field (No game restarts needed).");
-			QuickChatCaseSensitive = QuickChatBase.ConfigR.Bind("Shortcuts", "Is Case Sensitive?", false, "Are the shortcuts case sensitive? (Requires shortcut to be UPPERCASE or lowercase depending on definition of shortcut).");
-			QuickChatPrefix = QuickChatBase.ConfigR.Bind("Shortcuts", "Chat Prefix", "/", "The prefix to use before a shortcut (say the prefix was \"/\": [/SHORTCUT_NAME => MESSAGE].");
+			QuickChatUseAdvanced = Plugin.ConfigR.Bind("General", "Use Advanced Shortcut Definition", false, "Allows user to define shortcuts with one Text Field (No game restarts needed).");
+			QuickChatCaseSensitive = Plugin.ConfigR.Bind("Shortcuts", "Is Case Sensitive?", false, "Are the shortcuts case sensitive? (Requires shortcut to be UPPERCASE or lowercase depending on definition of shortcut).");
+			QuickChatPrefix = Plugin.ConfigR.Bind("Shortcuts", "Chat Prefix", "/", "The prefix to use before a shortcut (say the prefix was \"/\": [/SHORTCUT_NAME => MESSAGE].");
 
 			var quickChatUseAdvancedField = new BoolCheckBoxConfigItem(QuickChatUseAdvanced, true);
 			var quickChatCaseSensitiveField = new BoolCheckBoxConfigItem(QuickChatCaseSensitive, false);
@@ -50,7 +47,7 @@ namespace QuickChat
 			LethalConfigManager.AddConfigItem(quickChatPrefixField);
 			if (!UseAdvanced)
 			{
-				QuickChatSimpleShortcutsNumber = QuickChatBase.ConfigR.Bind("Shortcuts", "Simple Shortcuts Amount", 4, "Amount of simple shortcuts (REQUIRES RESTART TO UPDATE).");
+				QuickChatSimpleShortcutsNumber = Plugin.ConfigR.Bind("Shortcuts", "Simple Shortcuts Amount", 4, "Amount of simple shortcuts (REQUIRES RESTART TO UPDATE).");
 				var quickChatSimpleShortcutsNumberField = new IntInputFieldConfigItem(QuickChatSimpleShortcutsNumber, new IntInputFieldOptions()
 				{
 					RequiresRestart = true,
@@ -62,33 +59,37 @@ namespace QuickChat
 
 				for (int i = 0; i < SimpleShortcutsNum; i++)
 				{
-					var simpleShortcut = QuickChatBase.ConfigR.Bind($"Simple Shortcut {i}", "Shortcut", $"Shortcut{i}", "The Shortcut that will be changed to the Result on enter.");
-					var simpleShortcutField = new TextInputFieldConfigItem(simpleShortcut, new TextInputFieldOptions
-					{
-						RequiresRestart = false
-					});
-					simpleShortcut.SettingChanged += (obj, args) => SaveChatShortcuts(SimpleShortcutsNum, SimpleShortcuts);
+					int displayI = i + 1;
 
-					var simpleResult = QuickChatBase.ConfigR.Bind($"Simple Shortcut {i}", "Result", $"Result{i}", "The Result that will be shown after entering the Shortcut.");
+					var simpleName = Plugin.ConfigR.Bind($"Simple Shortcut {displayI}", "Name", $"Name{displayI}", "The Name of the Shortcut that will be changed to the Result on enter.");
+					var simpleNameField = new TextInputFieldConfigItem(simpleName, new TextInputFieldOptions
+					{
+						RequiresRestart = false,
+						CharacterLimit = 30
+					});
+					simpleName.SettingChanged += (obj, args) => SaveChatShortcuts(SimpleShortcutsNum, SimpleShortcuts);
+
+					var simpleResult = Plugin.ConfigR.Bind($"Simple Shortcut {displayI}", "Result", $"Result{displayI}", "The Result that will be shown after entering the Shortcut.");
 					var simpleResultField = new TextInputFieldConfigItem(simpleResult, new TextInputFieldOptions
 					{
-						RequiresRestart = false
+						RequiresRestart = false,
+						CharacterLimit = 30
 					});
 					simpleResult.SettingChanged += (obj, args) => SaveChatShortcuts(SimpleShortcutsNum, SimpleShortcuts);
 
-					LethalConfigManager.AddConfigItem(simpleShortcutField);
+					LethalConfigManager.AddConfigItem(simpleNameField);
 					LethalConfigManager.AddConfigItem(simpleResultField);
 
 					SimpleShortcuts.Add(new SimpleShortcut()
 					{
-						shortcut = simpleShortcut,
+						name = simpleName,
 						result = simpleResult
 					});
 				}
 			}
 			else
 			{
-				QuickChatShortcutsAdvanced = QuickChatBase.ConfigR.Bind("Shortcuts", "Advanced Chat Shortcuts", "a:My Balls", "Shortcuts in format of [SHORTCUT_NAME : MESSAGE, SHORTCUT_NAME2 : MESSAGE2] without the [].");
+				QuickChatShortcutsAdvanced = Plugin.ConfigR.Bind("Shortcuts", "Advanced Chat Shortcuts", "a:My Balls", "Shortcuts in format of [SHORTCUT_NAME : MESSAGE, SHORTCUT_NAME2 : MESSAGE2] without the [].");
 
 				var quickChatShortcutsAdvancedField = new TextInputFieldConfigItem(QuickChatShortcutsAdvanced, new TextInputFieldOptions
 				{
@@ -102,7 +103,7 @@ namespace QuickChat
 			SaveCaseSensitive();
 			SaveBasedOnUseAdvanced();
 
-			QuickChatBase.LogSource.LogDebug("QuickChat Config Successfully Loaded!");
+			Plugin.LogSource.LogDebug("QuickChat Config Successfully Loaded!");
 		}
 
 		internal static void SaveCaseSensitive()
@@ -144,14 +145,19 @@ namespace QuickChat
 			}
 		}
 
+		internal static string GetConfigType()
+		{
+			return UseAdvanced ? "Advanced" : "Simple";
+		}
+
 	}
 
 	internal class SimpleShortcut
 	{
-		internal ConfigEntry<string> shortcut;
+		internal ConfigEntry<string> name;
 		internal ConfigEntry<string> result;
 
-		internal string shortcutValue => shortcut.Value;
+		internal string nameValue => name.Value;
 		internal string resultValue => result.Value;
 	}
 }

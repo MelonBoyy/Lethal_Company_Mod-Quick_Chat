@@ -1,9 +1,10 @@
-﻿using BepInEx;
-using HarmonyLib;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using BepInEx;
+
+using HarmonyLib;
+using Unity.Netcode;
 
 namespace QuickChat
 {
@@ -32,7 +33,7 @@ namespace QuickChat
 
 				if (!CaseSensitive) shortcut = shortcut.ToLower();
 
-				QuickChatBase.LogSource.LogDebug($"New Chat Shortcut: \"{shortcut}\" => \"{result}\"");
+				Plugin.LogSource.LogDebug($"New Chat Shortcut: \"{shortcut}\" => \"{result}\"");
 				ChatShortcuts.Add(shortcut, result);
 			}
 
@@ -43,7 +44,7 @@ namespace QuickChat
 			ChatShortcuts.Clear();
 			for (int i = 0; i < num; i++)
 			{
-				string rawShortcut = simpleShortcuts[i].shortcutValue;
+				string rawShortcut = simpleShortcuts[i].nameValue;
 				string rawResult = simpleShortcuts[i].resultValue;
 
 				string shortcut, result;
@@ -55,10 +56,29 @@ namespace QuickChat
 
 				if (!CaseSensitive) shortcut = shortcut.ToLower();
 
-				QuickChatBase.LogSource.LogDebug($"New Chat Shortcut: \"{shortcut}\" => \"{result}\"");
+				Plugin.LogSource.LogDebug($"New Chat Shortcut: \"{shortcut}\" => \"{result}\"");
 				ChatShortcuts.Add(shortcut, result);
 			}
 
+		}
+
+		public static string GetChatShortcutsList()
+		{
+			string fullList = string.Empty;
+
+			foreach (KeyValuePair<string, string> ChatShortcut in ChatShortcuts)
+			{
+				int index = ChatShortcuts.Keys.ToList().IndexOf(ChatShortcut.Key);
+
+				fullList += $"{GetChatShortcutAdvancedFormat(index, ChatShortcut.Key, ChatShortcut.Value)}\n";
+			}
+
+			return fullList;
+		}
+
+		public static string GetChatShortcutAdvancedFormat(int num, string name, string result)
+		{
+			return $"{num} - {name} : {result}";
 		}
 
 		[HarmonyPatch(nameof(HUDManager.AddTextToChatOnServer))]
@@ -67,14 +87,14 @@ namespace QuickChat
 		{
 			string inspectChatMessage = CaseSensitive ? chatMessage : chatMessage.ToLower();
 
-			QuickChatBase.LogSource.LogDebug($"Tried to change command {chatMessage}");
+			Plugin.LogSource.LogDebug($"Tried to change command {chatMessage}");
 
 			if (ChatShortcuts.ContainsKey(inspectChatMessage))
 			{
 				string resultMessage = ChatShortcuts[inspectChatMessage];
 				chatMessage = resultMessage;
 
-				QuickChatBase.LogSource.LogDebug($"Found command {chatMessage} => {resultMessage}");
+				Plugin.LogSource.LogDebug($"Found command {chatMessage} => {resultMessage}");
 			}
 		}
 
