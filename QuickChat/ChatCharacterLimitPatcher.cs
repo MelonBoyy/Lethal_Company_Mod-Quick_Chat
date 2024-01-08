@@ -5,7 +5,6 @@ using System.Reflection.Emit;
 
 using HarmonyLib;
 using TMPro;
-using static UnityEngine.Scripting.GarbageCollector;
 
 namespace QuickChat
 {
@@ -48,14 +47,11 @@ namespace QuickChat
 			// Thank you albinogeek (https://github.com/AlbinoGeek), ayteeate, lordfirespeed, and JavidPack (https://gist.github.com/JavidPack/454477b67db8b017cb101371a8c49a1c) for helping me! 
 			for (int i = 0; i < code.Count - 1; i++)
 			{
-				Plugin.LogSource.LogInfo($"{code[i].opcode} .. {code[i].operand}");
-
 				if (code[i].opcode == OpCodes.Callvirt && code[i].operand.ToString() == "Int32 get_Length()" && code[i + 1].opcode == OpCodes.Ldc_I4_S)
 				{
 					code[i + 1].opcode = OpCodes.Ldc_I4;
 					code[i + 1].operand = CharacterLimit;
 
-					Plugin.LogSource.LogInfo($"{code[i + 1].opcode} .. {code[i + 1].operand} CHANGED");
 					break;
 				}
 			}

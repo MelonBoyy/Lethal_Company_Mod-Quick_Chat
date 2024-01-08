@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Reflection;
 using BepInEx;
-
+using GameNetcodeStuff;
 using HarmonyLib;
-using Unity.Netcode;
+using TMPro;
+
+using UnityEngine.UI;
 
 namespace QuickChat
 {
@@ -81,6 +83,13 @@ namespace QuickChat
 			return $"{num} - {name} : {result}";
 		}
 
+		[HarmonyPatch("Start")]
+		[HarmonyPostfix]
+		static void StopSelectionOnOpenChatPatch(ref TMP_InputField ___chatTextField)
+		{
+			___chatTextField.onFocusSelectAll = false;
+		}
+
 		[HarmonyPatch(nameof(HUDManager.AddTextToChatOnServer))]
 		[HarmonyPrefix]
 		static void ChatPatch(ref string chatMessage, ref int playerId)
@@ -96,6 +105,16 @@ namespace QuickChat
 
 				Plugin.LogSource.LogDebug($"Found command {chatMessage} => {resultMessage}");
 			}
+		}
+
+		[HarmonyPatch("EnableChat_performed")]
+		[HarmonyPostfix]
+		static void PrefixOnChatPatch(ref PlayerControllerB ___localPlayer, ref TMP_InputField ___chatTextField)
+		{
+			if (!ShortcutHandler.QuickChatPrefixOnChat.Value) return;
+
+			___chatTextField.text = ShortcutHandler.QuickChatPrefix.Value;
+			___chatTextField.MoveToEndOfLine(false, false);
 		}
 
 	}

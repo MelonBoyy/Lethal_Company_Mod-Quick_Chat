@@ -14,6 +14,7 @@ namespace QuickChat
 	{
 
 		internal static ConfigEntry<bool> QuickChatUseAdvanced;
+		internal static ConfigEntry<bool> QuickChatPrefixOnChat;
 		internal static ConfigEntry<bool> QuickChatCaseSensitive;
 		internal static ConfigEntry<string> QuickChatPrefix;
 		internal static ConfigEntry<int> QuickChatSimpleShortcutsNumber;
@@ -27,11 +28,19 @@ namespace QuickChat
 
 		internal static void Init()
 		{
-			QuickChatUseAdvanced = Plugin.ConfigR.Bind("General", "Use Advanced Shortcut Definition", false, "Allows user to define shortcuts with one Text Field (No game restarts needed).");
+			LethalConfigManager.SkipAutoGen();
+
+			QuickChatUseAdvanced = Plugin.ConfigR.Bind("General", "Use Advanced Shortcut Definition", false, "Allows user to define shortcuts with one Text Field (Only one restart required).");
+			QuickChatPrefixOnChat = Plugin.ConfigR.Bind("General", "Put Prefix on Chat", false, "Automatically your desired prefix when you open chat.");
 			QuickChatCaseSensitive = Plugin.ConfigR.Bind("Shortcuts", "Is Case Sensitive?", false, "Are the shortcuts case sensitive? (Requires shortcut to be UPPERCASE or lowercase depending on definition of shortcut).");
 			QuickChatPrefix = Plugin.ConfigR.Bind("Shortcuts", "Chat Prefix", "/", "The prefix to use before a shortcut (say the prefix was \"/\": [/SHORTCUT_NAME => MESSAGE].");
 
-			var quickChatUseAdvancedField = new BoolCheckBoxConfigItem(QuickChatUseAdvanced, true);
+			var quickChatUseAdvancedField = new BoolCheckBoxConfigItem(QuickChatUseAdvanced, new BoolCheckBoxOptions(){
+				CanModifyCallback = DontModifyResultOnRuntime
+			});
+
+			var quickChatPrefixOnChatField = new BoolCheckBoxConfigItem(QuickChatPrefixOnChat, false);
+
 			var quickChatCaseSensitiveField = new BoolCheckBoxConfigItem(QuickChatCaseSensitive, false);
 			QuickChatCaseSensitive.SettingChanged += (obj, args) => SaveCaseSensitive();
 
@@ -42,6 +51,7 @@ namespace QuickChat
 			QuickChatPrefix.SettingChanged += (obj, args) => SaveChatShortcuts(SimpleShortcutsNum, SimpleShortcuts);
 
 			LethalConfigManager.AddConfigItem(quickChatUseAdvancedField);
+			LethalConfigManager.AddConfigItem(quickChatPrefixOnChatField);
 
 			LethalConfigManager.AddConfigItem(quickChatCaseSensitiveField);
 			LethalConfigManager.AddConfigItem(quickChatPrefixField);
@@ -104,6 +114,11 @@ namespace QuickChat
 			SaveBasedOnUseAdvanced();
 
 			Plugin.LogSource.LogDebug("QuickChat Config Successfully Loaded!");
+		}
+
+		internal static CanModifyResult DontModifyResultOnRuntime()
+		{
+			return (false, "Can\'t change this setting outside of main menu.");
 		}
 
 		internal static void SaveCaseSensitive()
