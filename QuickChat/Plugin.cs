@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 
 using GameNetcodeStuff;
+using QuickChat.RadialMenu;
 
 namespace QuickChat
 {
@@ -26,8 +27,14 @@ namespace QuickChat
 			ShortcutHandler.Init();
 			TerminalHandler.Init();
 
+			RadialMenuSetupDefaults.Init();
+
 			Harmony.PatchAll(typeof(ChatPatcher));
 			Harmony.PatchAll(typeof(ChatCharacterLimitPatcher));
+			Harmony.PatchAll(typeof(RadialMenuHUD));
+			Harmony.PatchAll(typeof(RadialMenuInput));
+			Harmony.PatchAll(typeof(RadialMenuSetupDefaults));
+			Harmony.PatchAll(typeof(RadialMenuManager));
 		}
 
 	}
