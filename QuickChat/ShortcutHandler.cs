@@ -28,16 +28,12 @@ namespace QuickChat
 
 		internal static void Init()
 		{
-			LethalConfigManager.SkipAutoGen();
-
 			QuickChatUseAdvanced = Plugin.ConfigR.Bind("General", "Use Advanced Shortcut Definition", false, "Allows user to define shortcuts with one Text Field (Only one restart required).");
 			QuickChatPrefixOnChat = Plugin.ConfigR.Bind("General", "Put Prefix on Chat", false, "Automatically your desired prefix when you open chat.");
 			QuickChatCaseSensitive = Plugin.ConfigR.Bind("Shortcuts", "Is Case Sensitive?", false, "Are the shortcuts case sensitive? (Requires shortcut to be UPPERCASE or lowercase depending on definition of shortcut).");
 			QuickChatPrefix = Plugin.ConfigR.Bind("Shortcuts", "Chat Prefix", "/", "The prefix to use before a shortcut (say the prefix was \"/\": [/SHORTCUT_NAME => MESSAGE].");
 
-			var quickChatUseAdvancedField = new BoolCheckBoxConfigItem(QuickChatUseAdvanced, new BoolCheckBoxOptions(){
-				CanModifyCallback = DontModifyResultOnRuntime
-			});
+			var quickChatUseAdvancedField = new BoolCheckBoxConfigItem(QuickChatUseAdvanced, requiresRestart: true);
 
 			var quickChatPrefixOnChatField = new BoolCheckBoxConfigItem(QuickChatPrefixOnChat, false);
 
@@ -74,16 +70,14 @@ namespace QuickChat
 					var simpleName = Plugin.ConfigR.Bind($"Simple Shortcut {displayI}", "Name", $"Name{displayI}", "The Name of the Shortcut that will be changed to the Result on enter.");
 					var simpleNameField = new TextInputFieldConfigItem(simpleName, new TextInputFieldOptions
 					{
-						RequiresRestart = false,
-						CharacterLimit = 30
+						RequiresRestart = false
 					});
 					simpleName.SettingChanged += (obj, args) => SaveChatShortcuts(SimpleShortcutsNum, SimpleShortcuts);
 
 					var simpleResult = Plugin.ConfigR.Bind($"Simple Shortcut {displayI}", "Result", $"Result{displayI}", "The Result that will be shown after entering the Shortcut.");
 					var simpleResultField = new TextInputFieldConfigItem(simpleResult, new TextInputFieldOptions
 					{
-						RequiresRestart = false,
-						CharacterLimit = 30
+						RequiresRestart = false
 					});
 					simpleResult.SettingChanged += (obj, args) => SaveChatShortcuts(SimpleShortcutsNum, SimpleShortcuts);
 
@@ -114,11 +108,6 @@ namespace QuickChat
 			SaveBasedOnUseAdvanced();
 
 			Plugin.LogSource.LogDebug("QuickChat Config Successfully Loaded!");
-		}
-
-		internal static CanModifyResult DontModifyResultOnRuntime()
-		{
-			return (false, "Can\'t change this setting outside of main menu.");
 		}
 
 		internal static void SaveCaseSensitive()

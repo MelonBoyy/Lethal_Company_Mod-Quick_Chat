@@ -13,7 +13,7 @@ namespace QuickChat.RadialMenu
 		internal static InputAction RadialMenuToggleAction = new InputAction("Open", type: InputActionType.Button, binding: "<Keyboard>/alt");
 		internal static InputAction RadialMenuCloseAction = new InputAction("Close", type: InputActionType.Button, binding: "<Mouse>/rightButton");
 
-		public static void Init()
+		internal static void Init()
 		{
 			RadialMenuToggleAction.Enable();
 			RadialMenuCloseAction.Enable();
@@ -24,7 +24,7 @@ namespace QuickChat.RadialMenu
 			Cursor.lockState = CursorLockMode.Locked;
 		}
 
-		public static void DeInit()
+		internal static void DeInit()
 		{
 			RadialMenuToggleAction.Disable();
 			RadialMenuCloseAction.Disable();
@@ -38,21 +38,22 @@ namespace QuickChat.RadialMenu
 			var localPlayer = GameNetworkManager.Instance.localPlayerController;
 			if (localPlayer.isTypingChat || localPlayer.isPlayerDead || localPlayer.quickMenuManager.isMenuOpen) return;
 
-			RadialMenuHUD.RadialMenuOpen = !RadialMenuHUD.RadialMenuOpen;
+			RadialMenuManager.RadialMenuOpen = !RadialMenuManager.RadialMenuOpen;
 
-			RadialMenuHUD.ToggleRadialMenu(RadialMenuHUD.RadialMenuOpen);
+			RadialMenuHUD.ToggleRadialMenu(RadialMenuManager.RadialMenuOpen);
 		}
 
 		private static void RadialMenuCloseAction_performed(InputAction.CallbackContext ctx)
 		{
 			RadialMenuManager.GoBackMenu();
+			RadialMenuManager.UpdateChat();
 		}
 
 		[HarmonyPatch(typeof(HUDManager), "CanPlayerScan")]
 		[HarmonyPrefix]
 		static bool PingScanBackMenuPatch()
 		{
-			if (RadialMenuHUD.RadialMenuOpen) return false;
+			if (RadialMenuManager.RadialMenuOpen) return false;
 
 			return true;
 		}

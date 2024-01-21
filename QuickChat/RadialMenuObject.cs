@@ -20,16 +20,34 @@ namespace QuickChat.RadialMenu
 		public float radialOffset = UnitCircleOffset.BOTTOM;
 
 		public string name = "Menu";
+		public bool saveToHistory = true;
 
 		public float outwards = 175f;
 
 		private bool created = false;
 
+		/// <summary>
+		/// Adds a RadialButton at the end of the "radialButtons" list
+		/// </summary>
+		/// <param name="button">The RadialButton to add.</param>
 		public void AddRadialButton(RadialButton button)
 		{
 			radialButtons.Add(button);
 		}
 
+		/// <summary>
+		/// Inserts a RadialButton at the specified index of the "radialButtons" list
+		/// </summary>
+		/// <param name="button">The RadialButton to insert.</param>
+		public void InsertRadialButton(RadialButton button, int i)
+		{
+			radialButtons.Insert(i, button);
+		}
+
+		/// <summary>
+		/// Updates RadialButtons, replacing all of them with a new list of RadialButtons, setting them up, and splitting them in a circular pattern.
+		/// </summary>
+		/// <param name="radialButtons"></param>
 		public void UpdateRadialButtons(List<RadialButton> radialButtons)
 		{
 			if (!created) return;
@@ -42,6 +60,9 @@ namespace QuickChat.RadialMenu
 			EvenlySplitOnUnitCircle();
 		}
 
+		/// <summary>
+		/// Updates RadialButtons, setting all of them up and evenly splitting them in a circular pattern.
+		/// </summary>
 		public void UpdateRadialButtons()
 		{
 			if (!created) return;
@@ -50,6 +71,10 @@ namespace QuickChat.RadialMenu
 			EvenlySplitOnUnitCircle();
 		}
 
+		/// <summary>
+		/// Removes a RadialButton from this menu at the index "i".
+		/// </summary>
+		/// <param name="i">Index to remove.</param>
 		public void RemoveRadialButton(int i)
 		{
 			radialButtons.RemoveAt(i);
@@ -102,15 +127,32 @@ namespace QuickChat.RadialMenu
 			radialButtons.ForEach(button => button.QuoteOnQuoteDestroyRadialButton());
 		}
 
+		/// <summary>
+		/// Creates a blank RadialMenu. Recommended use of an initializer {}
+		/// </summary>
+		public RadialMenu() { }
+		
+		/// <summary>
+		/// Creates a blank RadialMenu with a name. Recommended use of an initializer {}
+		/// </summary>
+		/// <param name="name">Name of the RadialMenu.</param>
+		public RadialMenu(string name)
+		{
+			this.name = name;
+		}
+
 		public class RadialButton
 		{
 			public GameObject gameObject;
 			public Transform transform;
 			public RectTransform rectTransform;
 
-			public Sprite sprite;
+			public Sprite buttonSprite;
+			public Color buttonColor = Color.white;
+
 			public string text = string.Empty;
 			public string displayText = string.Empty;
+			public Func<char> punctuation = () => '.';
 
 			public Vector2 positionOverride = Vector2.zero;
 			public Vector2 sizeDelta = Vector2.one * 75;
@@ -131,9 +173,10 @@ namespace QuickChat.RadialMenu
 			public static event RadialButtonClicked PreRadialButtonClicked;
 			public static event RadialButtonClicked PostRadialButtonClicked;
 
+			public bool saveToHistory = true;
 			private bool created = false;
 
-			public void QuoteOnQuoteDestroyRadialButton()
+			internal void QuoteOnQuoteDestroyRadialButton()
 			{
 				if (!created) return;
 
@@ -176,10 +219,14 @@ namespace QuickChat.RadialMenu
 				CreateTextField();
 
 				Image radialButtonImage = gameObject.AddComponent<Image>();
-				radialButtonImage.sprite = sprite;
+				radialButtonImage.sprite = buttonSprite;
+				radialButtonImage.color = buttonColor;
 
 				Button radialButton = gameObject.AddComponent<Button>();
+				radialButton.image = radialButtonImage;
 				radialButton.onClick.AddListener(OnClick);
+
+				text = text.Trim();
 
 				rectTransform = radialButton.transform as RectTransform;
 				rectTransform.sizeDelta = sizeDelta;
@@ -191,16 +238,110 @@ namespace QuickChat.RadialMenu
 				PreRadialButtonClicked?.Invoke(parentRadialMenu, this);
 
 				RadialMenu connectingRadialMenu = this.connectingRadialMenu?.Invoke();
+				RadialMenu oldMenu = RadialMenuManager.CurrentMenu;
 
-				if (text != string.Empty) RadialMenuManager.AddChatText(text);
+				if (saveToHistory) RadialMenuManager.AddRadialButtonHistory(this);
 
 				if (connectingRadialMenu == null || connectingRadialMenu.radialButtons.Count <= 0) RadialMenuManager.SendChatText();
-				else RadialMenuManager.SetCurrentMenu(connectingRadialMenu);
+				else RadialMenuManager.SetCurrentMenu(connectingRadialMenu, RadialMenuManager.LastMenu != oldMenu);
 
-				RadialMenuManager.RefreshMenu();
+				RadialMenuManager.RefreshMenu(oldMenu, connectingRadialMenu);
 
 				postRadialButtonClicked?.Invoke(parentRadialMenu, this);
 				PostRadialButtonClicked?.Invoke(parentRadialMenu, this);
+			}
+
+			/// <summary>
+			/// Creates a blank RadialButton. Recommended use of an initializer {}
+			/// </summary>
+			public RadialButton() {}
+
+			/// <summary>
+			/// Creates a RadialButton that connects to another specified menu, and with the name of the menu displayed on the button. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="connectingRadialMenu">The menu that the button should connect to.</param>
+			public RadialButton(RadialMenu connectingRadialMenu)
+			{
+				this.displayText = connectingRadialMenu.name;
+				this.connectingRadialMenu = () => connectingRadialMenu;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton that connects to another specified menu, with the name of the menu displayed on the button, and a specified color. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="connectingRadialMenu">The menu that the button should connect to.</param>
+			/// <param name="buttonColor">The color that the button should be.</param>
+			public RadialButton(RadialMenu connectingRadialMenu, Color buttonColor)
+			{
+				this.displayText = connectingRadialMenu.name;
+				this.buttonColor = buttonColor;
+				this.connectingRadialMenu = () => connectingRadialMenu;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text for the button to have.</param>
+			public RadialButton(string text)
+			{
+				this.text = text;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text, and a specified color. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text that the button should contain.</param>
+			/// <param name="buttonColor">The color that the button should be.</param>
+			public RadialButton(string text, Color buttonColor)
+			{
+				this.text = text;
+				this.buttonColor = buttonColor;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text, and a specified punctuation mark. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text the button should contain.</param>
+			/// <param name="punctuation">The punctuation mark the button should use.</param>
+			public RadialButton(string text, char punctuation)
+			{
+				this.text = text;
+				this.punctuation = () => punctuation;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text, and specified display text that should show on the button. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text that the button should contain.</param>
+			/// <param name="displayText">The display text that should appear on the button.</param>
+			public RadialButton(string text, string displayText)
+			{
+				this.text = text;
+				this.displayText = displayText;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text, and another specified menu that the button should connect to. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text that the button should contain.</param>
+			/// <param name="connectingRadialMenu">The menu that the button should connect to.</param>
+			public RadialButton(string text, RadialMenu connectingRadialMenu)
+			{
+				this.text = text;
+				this.connectingRadialMenu = () => connectingRadialMenu;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text, specified display text that should appear on the button, and another specified menu that the button should connect to. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text that the button should contain.</param>
+			/// <param name="displayText">The display text that should appear on the button.</param>
+			/// <param name="connectingRadialMenu">The menu that the button should connect to.</param>
+			public RadialButton(string text, string displayText, RadialMenu connectingRadialMenu)
+			{
+				this.text = text;
+				this.displayText = displayText;
+				this.connectingRadialMenu = () => connectingRadialMenu;
 			}
 
 		}

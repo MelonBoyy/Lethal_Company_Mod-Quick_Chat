@@ -18,104 +18,58 @@ namespace QuickChat.RadialMenu
 		public static RadialMenu monstersMenu2;
 		public static RadialMenu monstersMenu;
 		public static RadialMenu commandsMenu;
+		public static RadialMenu answersMenu;
 		public static RadialMenu questionsMenu;
 		public static RadialMenu observationsMenu;
-		public static RadialMenu criesMenu;
-		public static RadialMenu testMenu;
+		public static RadialMenu urgentMenu;
+		public static RadialMenu defaultMenu;
 
-		public static void Init()
+		internal static void Init()
 		{
 			positionsMenu = new RadialMenu()
 			{
 				name = "Positions",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
-					new RadialMenu.RadialButton()
+					new RadialMenu.RadialButton("that way", "\"that way\" (point)")
 					{
-						text = "that way.",
-						displayText = "\"that way.\" (point)",
-						postRadialButtonClicked = (radialMenu, radialButton) =>
-						{
-							var localPlayer = GameNetworkManager.Instance.localPlayerController;
-							localPlayer.PerformEmote(new InputAction.CallbackContext(), 2);
-						}
+						postRadialButtonClicked = (radialMenu, radialButton) => PerformEmoteFix(2)
 					},
-					new RadialMenu.RadialButton()
-					{
-						text = "up ahead."
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "here."
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "to the left."
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "to the right."
-					}
+					new RadialMenu.RadialButton("to the right"),
+					new RadialMenu.RadialButton("up ahead"),
+					new RadialMenu.RadialButton("here"),
+					new RadialMenu.RadialButton("to the left")
 				}
 			};
 
-			playersMenu = new RadialMenu()
-			{
-				name = "Players"
-			};
+			playersMenu = new RadialMenu("Players");
 
 			monstersMenu2 = new RadialMenu()
 			{
 				name = "Monsters 2",
+				saveToHistory = false,
 				radialOffset = RadialMenu.UnitCircleOffset.LEFT,
 				radialButtons = new List<RadialMenu.RadialButton>
 				{
 					new RadialMenu.RadialButton()
 					{
 						displayText = "Last Page",
+						saveToHistory = false,
 						connectingRadialMenu = () => monstersMenu
 					},
-					new RadialMenu.RadialButton()
+					new RadialMenu.RadialButton("Nutcracker", positionsMenu),
+					new RadialMenu.RadialButton("Coil-Head", positionsMenu),
+					new RadialMenu.RadialButton("Jester", positionsMenu),
+					new RadialMenu.RadialButton("Masked", positionsMenu),
+					new RadialMenu.RadialButton("Forest Keeper", positionsMenu),
+					new RadialMenu.RadialButton("Baboon Hawk", positionsMenu),
+					new RadialMenu.RadialButton("Eyeless Dog", positionsMenu)
 					{
-						text = "Nutcracker",
-						connectingRadialMenu = () => positionsMenu
+						preRadialButtonClicked = (radialMenu, radialButton) => RadialMenuManager.ModifyRadialButtonHistory("There's an", RadialMenuManager.RadialButtonHistory.Count - 1)
 					},
-					new RadialMenu.RadialButton()
+					new RadialMenu.RadialButton("Earth Leviathan", positionsMenu)
 					{
-						text = "Coil-Head",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Jester",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Masked",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Eyeless Dog",
-						preRadialButtonClicked = (radialMenu, radialButton) => RadialMenuManager.ModifyChatText("There\'s an", RadialMenuManager.ChatText.Count - 1),
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Forest Keeper",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Earth Leviathan",
-						preRadialButtonClicked = (radialMenu, radialButton) => RadialMenuManager.ModifyChatText("There\'s an", RadialMenuManager.ChatText.Count - 1),
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Baboon Hawk",
-						connectingRadialMenu = () => positionsMenu
+						preRadialButtonClicked = (radialMenu, radialButton) => RadialMenuManager.ModifyRadialButtonHistory("There's an", RadialMenuManager.RadialButtonHistory.Count - 1)
 					}
 				}
 			};
@@ -129,48 +83,17 @@ namespace QuickChat.RadialMenu
 					new RadialMenu.RadialButton()
 					{
 						displayText = "Next Page",
+						saveToHistory = false,
 						connectingRadialMenu = () => monstersMenu2
 					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Snare Flea",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Bunker Spider",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Hoarding Bug",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Bracken",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Thumper",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Hydrogere",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Ghost Girl",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Spore Lizard",
-						connectingRadialMenu = () => positionsMenu
-					}
+					new RadialMenu.RadialButton("Snare Flea", positionsMenu),
+					new RadialMenu.RadialButton("Bunker Spider", positionsMenu),
+					new RadialMenu.RadialButton("Hoarding Bug", positionsMenu),
+					new RadialMenu.RadialButton("Bracken", positionsMenu),
+					new RadialMenu.RadialButton("Thumper", positionsMenu),
+					new RadialMenu.RadialButton("Hydrogere", positionsMenu),
+					new RadialMenu.RadialButton("Ghost Girl", positionsMenu),
+					new RadialMenu.RadialButton("Spore Lizard", positionsMenu)
 				}
 			};
 
@@ -179,36 +102,25 @@ namespace QuickChat.RadialMenu
 				name = "Commands",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
-					new RadialMenu.RadialButton()
+					new RadialMenu.RadialButton("Follow me"),
+					new RadialMenu.RadialButton("Stop walking"),
+					new RadialMenu.RadialButton("Be quiet"),
+					new RadialMenu.RadialButton("I\'m gonna go"),
+					new RadialMenu.RadialButton("Let\'s go", "\"Let\'s go {direction}\"", positionsMenu)
+				}
+			};
+
+			answersMenu = new RadialMenu()
+			{
+				name = "Answers",
+				radialButtons = new List<RadialMenu.RadialButton>()
+				{
+					new RadialMenu.RadialButton("I\'m thinking", Color.gray)
 					{
-						text = "Help!",
+						textColor = Color.white
 					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Run!",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Follow me.",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Stop walking.",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Be quiet.",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "I\'m gonna go."
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Let\'s go",
-						displayText = "\"Let\'s go {direction}\"",
-						connectingRadialMenu = () => positionsMenu
-					}
+					new RadialMenu.RadialButton("No", Color.red),
+					new RadialMenu.RadialButton("Yes", Color.green)
 				}
 			};
 
@@ -217,26 +129,11 @@ namespace QuickChat.RadialMenu
 				name = "Questions",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
-					new RadialMenu.RadialButton()
-					{
-						text = "What was that?",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Who\'s there?",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Are you okay?",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Did you hear that?",
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "Are you real?",
-					}
+					new RadialMenu.RadialButton("What was that", '?'),
+					new RadialMenu.RadialButton("Who\'s there", '?'),
+					new RadialMenu.RadialButton("Are you okay", '?'),
+					new RadialMenu.RadialButton("Did you hear that", '?'),
+					new RadialMenu.RadialButton("Are you real", '?')
 				}
 			};
 
@@ -245,95 +142,42 @@ namespace QuickChat.RadialMenu
 				name = "Observations",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
-					new RadialMenu.RadialButton()
-					{
-						text = "More scrap",
-						displayText = "\"More scrap {direction}\"",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "There\'s a",
-						displayText = "\"There\'s a {monster} {direction}\"",
-						connectingRadialMenu = () => monstersMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "There\'s a trap",
-						displayText = "\"There\'s a trap {direction}\"",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "There\'s a dead end",
-						displayText = "\"There\'s a dead end {direction}\"",
-						connectingRadialMenu = () => positionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "That\'s a mimic fire exit!"
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "That\'s not real!"
-					}
+					new RadialMenu.RadialButton("More scrap", "\"More scrap {direction}\"", positionsMenu),
+					new RadialMenu.RadialButton("There\'s a trap", "\"There\'s a trap {direction}\"", positionsMenu),
+					new RadialMenu.RadialButton("There\'s a dead end", "\"There\'s a dead end {direction}\"", positionsMenu),
+					new RadialMenu.RadialButton("There\'s a", "\"There\'s a(n) {monster} {direction}\"", monstersMenu),
+					new RadialMenu.RadialButton("That\'s a mimic fire exit", '!'),
+					new RadialMenu.RadialButton("That\'s not real", '!')
 				}
 			};
 
-			criesMenu = new RadialMenu()
+			urgentMenu = new RadialMenu()
 			{
-				name = "Cries",
+				name = "Urgent",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
-					new RadialMenu.RadialButton()
-					{
-						text = "I\'m about to die!"
-					},
-					new RadialMenu.RadialButton()
-					{
-						text = "God please forgive me for my sins."
-					}
+					new RadialMenu.RadialButton("I\'m about to die", '!'),
+					new RadialMenu.RadialButton("Run", '!'),
+					new RadialMenu.RadialButton("Help", '!'),
+					new RadialMenu.RadialButton("We have to get out of here", '!')
 				}
 			};
 
-			testMenu = new RadialMenu()
+			defaultMenu = new RadialMenu()
 			{
-				name = "Directions",
+				name = "Default Menu",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
-					new RadialMenu.RadialButton()
-					{
-						displayText = "Observations Menu",
-						connectingRadialMenu = () => observationsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						displayText = "Questions Menu",
-						connectingRadialMenu = () => questionsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						displayText = "Commands Menu",
-						connectingRadialMenu = () => commandsMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						displayText = "Cries Menu",
-						connectingRadialMenu = () => criesMenu
-					},
-					new RadialMenu.RadialButton()
-					{
-						displayText = "Players Menu",
-						connectingRadialMenu = () => playersMenu
-					},
+					new RadialMenu.RadialButton(observationsMenu, Color.cyan),
+					new RadialMenu.RadialButton(questionsMenu, Color.yellow),
+					new RadialMenu.RadialButton(commandsMenu, Color.magenta),
+					new RadialMenu.RadialButton(urgentMenu, Color.red),
+					new RadialMenu.RadialButton(answersMenu, Color.green),
+					new RadialMenu.RadialButton(playersMenu, Color.blue)
 				}
 			};
 
-			RadialMenuManager.MainMenu.AddRadialButton(new RadialMenu.RadialButton()
-			{
-				displayText = "Test Menu",
-				connectingRadialMenu = () => testMenu
-			});
+			RadialMenuManager.MainMenu.AddRadialButton(new RadialMenu.RadialButton(defaultMenu));
 
 			RadialMenuManager.RegisterRadialMenu(positionsMenu);
 			RadialMenuManager.RegisterRadialMenu(playersMenu);
@@ -342,8 +186,19 @@ namespace QuickChat.RadialMenu
 			RadialMenuManager.RegisterRadialMenu(commandsMenu);
 			RadialMenuManager.RegisterRadialMenu(questionsMenu);
 			RadialMenuManager.RegisterRadialMenu(observationsMenu);
-			RadialMenuManager.RegisterRadialMenu(criesMenu);
-			RadialMenuManager.RegisterRadialMenu(testMenu);
+			RadialMenuManager.RegisterRadialMenu(urgentMenu);
+			RadialMenuManager.RegisterRadialMenu(answersMenu);
+			RadialMenuManager.RegisterRadialMenu(defaultMenu);
+		}
+
+		private static void PerformEmoteFix(int emoteIndex)
+		{
+			var localPlayer = GameNetworkManager.Instance.localPlayerController;
+
+			localPlayer.timeSinceStartingEmote = 0f;
+			localPlayer.performingEmote = true;
+			localPlayer.playerBodyAnimator.SetInteger("emoteNumber", emoteIndex);
+			localPlayer.StartPerformingEmoteServerRpc();
 		}
 
 		[HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]

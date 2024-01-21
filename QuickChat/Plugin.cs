@@ -5,6 +5,7 @@ using HarmonyLib;
 
 using GameNetcodeStuff;
 using QuickChat.RadialMenu;
+using LethalConfig;
 
 namespace QuickChat
 {
@@ -24,10 +25,13 @@ namespace QuickChat
 			ConfigR = Config;
 			LogSource.LogInfo($"{PluginInfo.ModName} {PluginInfo.ModVersion} has been loaded!");
 
+			LethalConfigManager.SkipAutoGen();
+
+			RadialMenuConfig.Init();
+			RadialMenuSetupDefaults.Init();
+
 			ShortcutHandler.Init();
 			TerminalHandler.Init();
-
-			RadialMenuSetupDefaults.Init();
 
 			Harmony.PatchAll(typeof(ChatPatcher));
 			Harmony.PatchAll(typeof(ChatCharacterLimitPatcher));
@@ -43,6 +47,6 @@ namespace QuickChat
 	{
 		public const string ModGUID = "alfungy.quickchat";
 		public const string ModName = "Quick Chat";
-		public const string ModVersion = "1.0.0";
+		public const string ModVersion = "2.0.0";
 	}
 }

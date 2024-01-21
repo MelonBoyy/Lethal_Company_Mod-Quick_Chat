@@ -18,48 +18,74 @@ namespace QuickChat.RadialMenu
 	public class RadialMenuHUD
 	{
 		internal static GameObject RadialMenuHUDObject;
+		internal static Image RadialMenuHUDBackground;
+		internal static TextMeshProUGUI RadialMenuHUDRecentText;
 		internal static Camera RadialMenuHUDCamera;
 
 		internal static Vector2 Center => new Vector2(Screen.width / 2, Screen.height / 2);
 
-		internal static bool RadialMenuOpen = false;
-		internal static bool RadialMenuLoaded = false;
-
-		public static void Init()
+		internal static void Init()
 		{
 			Transform canvas = GameObject.Find("Systems").transform.Find("UI").transform.Find("Canvas");
 			Transform uiCamera = GameObject.Find("Systems").transform.Find("UI").transform.Find("UICamera");
+
+			RadialMenuHUDCamera = uiCamera.GetComponent<Camera>();
 
 			RadialMenuHUDObject = new GameObject()
 			{
 				name = "QuickChat Container"
 			};
 			RadialMenuHUDObject.transform.SetParent(canvas, false);
-			
+
 			RectTransform rectTransform = RadialMenuHUDObject.AddComponent<RectTransform>();
 			rectTransform.offsetMax = new Vector2(25, 75);
 			rectTransform.offsetMin = new Vector2(0, 50);
 
-			RadialMenuHUDCamera = uiCamera.GetComponent<Camera>();
+			RadialMenuHUDBackground = new GameObject()
+			{
+				name = "QuickChat Background"
+			}.AddComponent<Image>();
+			RadialMenuHUDBackground.transform.SetParent(RadialMenuHUDObject.transform, false);
+			RadialMenuHUDBackground.transform.SetSiblingIndex(0);
+
+			RadialMenuHUDBackground.color = new Color32(0, 0, 0, (byte)RadialMenuConfig.QuickChatRadialMenuBackgroundAlpha.Value);
+
+			RadialMenuHUDBackground.rectTransform.anchoredPosition = RadialMenuHUDCamera.ScreenToWorldPoint(Center);
+			RadialMenuHUDBackground.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
+
+			RadialMenuHUDRecentText = new GameObject()
+			{
+				name = "Most Recent Text"
+			}.AddComponent<TextMeshProUGUI>();
+			RadialMenuHUDRecentText.transform.SetParent(RadialMenuHUDObject.transform, false);
+			RadialMenuHUDRecentText.alignment = TextAlignmentOptions.Center;
+
+			RadialMenuHUDRecentText.enableWordWrapping = true;
+			RadialMenuHUDRecentText.enableAutoSizing = true;
+			RadialMenuHUDRecentText.fontSizeMin = RadialMenuConfig.QuickChatRadialMenuRecentTextMinSize.Value;
+			RadialMenuHUDRecentText.fontSizeMax = RadialMenuConfig.QuickChatRadialMenuRecentTextMaxSize.Value;
+
+			RadialMenuHUDRecentText.rectTransform.sizeDelta = new Vector2(350, 350);
+			RadialMenuHUDRecentText.rectTransform.anchoredPosition = RadialMenuHUDCamera.ScreenToWorldPoint(Center);
 
 			RadialMenuHUDObject.SetActive(false);
-			RadialMenuLoaded = true;
+			RadialMenuManager.RadialMenuLoaded = true;
 		}
 
 		public static void DeInit()
 		{
-			RadialMenuLoaded = false;
+			RadialMenuManager.RadialMenuLoaded = false;
 		}
 
 		public static void ToggleRadialMenu(bool open, bool modifyInput = true)
 		{
-			if (!RadialMenuLoaded) return;
+			if (!RadialMenuManager.RadialMenuLoaded) return;
 			if (!open) RadialMenuManager.ResetChatText();
 
 			var localPlayer = GameNetworkManager.Instance.localPlayerController;
 
 			RadialMenuHUDObject.SetActive(open);
-			RadialMenuOpen = open;
+			RadialMenuManager.RadialMenuOpen = open;
 
 			if (modifyInput)
 			{
@@ -77,6 +103,11 @@ namespace QuickChat.RadialMenu
 			HUDManager.Instance.chatTextField.MoveToEndOfLine(false, false);
 
 			HUDManager.Instance.PingHUDElement(HUDManager.Instance.Chat, 1f, 1f, 1f);
+		}
+
+		public static void UpdateChatRecentText(string text)
+		{
+			RadialMenuHUDRecentText.text = text;
 		}
 
 		[HarmonyPatch(typeof(QuickMenuManager), nameof(QuickMenuManager.OpenQuickMenu))]
