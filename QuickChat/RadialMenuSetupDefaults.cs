@@ -7,12 +7,13 @@ using UnityEngine.InputSystem;
 
 using HarmonyLib;
 using GameNetcodeStuff;
+using System.Xml.Linq;
 
 namespace QuickChat.RadialMenu
 {
 	public class RadialMenuSetupDefaults
 	{
-		internal static List<string> PlayerNames = new List<string>() { "John", "Billy", "Bob" };
+		internal static List<string> PlayerNames = new List<string>();
 		public static RadialMenu positionsMenu;
 		public static RadialMenu playersMenu;
 		public static RadialMenu monstersMenu2;
@@ -26,9 +27,8 @@ namespace QuickChat.RadialMenu
 
 		internal static void Init()
 		{
-			positionsMenu = new RadialMenu()
+			positionsMenu = new RadialMenu("Positions")
 			{
-				name = "Positions",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton("that way", "\"that way\" (point)")
@@ -44,9 +44,8 @@ namespace QuickChat.RadialMenu
 
 			playersMenu = new RadialMenu("Players");
 
-			monstersMenu2 = new RadialMenu()
+			monstersMenu2 = new RadialMenu("Monsters 2")
 			{
-				name = "Monsters 2",
 				saveToHistory = false,
 				radialOffset = RadialMenu.UnitCircleOffset.LEFT,
 				radialButtons = new List<RadialMenu.RadialButton>
@@ -74,9 +73,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			monstersMenu = new RadialMenu()
+			monstersMenu = new RadialMenu("Monsters")
 			{
-				name = "Monsters",
 				radialOffset = RadialMenu.UnitCircleOffset.RIGHT,
 				radialButtons = new List<RadialMenu.RadialButton>
 				{
@@ -97,9 +95,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			commandsMenu = new RadialMenu()
+			commandsMenu = new RadialMenu("Commands")
 			{
-				name = "Commands",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton("Follow me"),
@@ -110,9 +107,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			answersMenu = new RadialMenu()
+			answersMenu = new RadialMenu("Answers")
 			{
-				name = "Answers",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton("I\'m thinking", Color.gray)
@@ -124,9 +120,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			questionsMenu = new RadialMenu()
+			questionsMenu = new RadialMenu("Questions")
 			{
-				name = "Questions",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton("What was that", '?'),
@@ -137,9 +132,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			observationsMenu = new RadialMenu()
+			observationsMenu = new RadialMenu("Observations")
 			{
-				name = "Observations",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton("More scrap", "\"More scrap {direction}\"", positionsMenu),
@@ -151,9 +145,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			urgentMenu = new RadialMenu()
+			urgentMenu = new RadialMenu("Urgent")
 			{
-				name = "Urgent",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton("I\'m about to die", '!'),
@@ -163,9 +156,8 @@ namespace QuickChat.RadialMenu
 				}
 			};
 
-			defaultMenu = new RadialMenu()
+			defaultMenu = new RadialMenu("Default Menu")
 			{
-				name = "Default Menu",
 				radialButtons = new List<RadialMenu.RadialButton>()
 				{
 					new RadialMenu.RadialButton(observationsMenu, Color.cyan),
@@ -205,7 +197,6 @@ namespace QuickChat.RadialMenu
 		[HarmonyPostfix]
 		static void SetupPlayerMenu(PlayerControllerB __instance)
 		{
-
 			List<RadialMenu.RadialButton> radialButtons = new List<RadialMenu.RadialButton>();
 
 			foreach (PlayerControllerB i in __instance.playersManager.allPlayerScripts)

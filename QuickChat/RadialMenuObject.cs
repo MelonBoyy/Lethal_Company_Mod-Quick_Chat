@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,14 +14,34 @@ namespace QuickChat.RadialMenu
 		public Transform transform;
 
 		public List<RadialButton> radialButtons = new List<RadialButton>();
-		public float radialOffset = UnitCircleOffset.BOTTOM;
 
 		public string name = "Menu";
 		public bool saveToHistory = true;
 
-		public float outwards = 175f;
+		private float m_radialOffset = UnitCircleOffset.BOTTOM;
+		public float radialOffset
+		{
+			get { return m_radialOffset; }
+			set
+			{
+				m_radialOffset = value;
+				EvenlySplitOnUnitCircle();
+			}
+		}
 
-		private bool created = false;
+		private float m_outwards = 175f;
+		public float outwards
+		{
+			get { return m_outwards; }
+			set
+			{
+				m_outwards = value;
+				EvenlySplitOnUnitCircle();
+			}
+		}
+
+		public bool created { get; private set; } = false;
+
 
 		/// <summary>
 		/// Adds a RadialButton at the end of the "radialButtons" list
@@ -86,10 +103,16 @@ namespace QuickChat.RadialMenu
 			{
 				RadialButton radialButton = radialButtons[i];
 
+				if (radialButton.positionOverride != Vector2.zero)
+				{
+					radialButton.rectTransform.anchoredPosition = radialButton.positionOverride;
+					continue;
+				}
+
 				float point = GetPointOnUnitCircle(i);
 				Vector2 position = (Vector2)RadialMenuHUD.RadialMenuHUDCamera.ScreenToWorldPoint(RadialMenuHUD.Center) + GetPositionOnUnitCircle(point) * outwards;
 
-				radialButton.rectTransform.anchoredPosition = radialButton.positionOverride != Vector2.zero ? radialButton.positionOverride : position;
+				radialButton.rectTransform.anchoredPosition = position;
 			}
 
 			float GetPointOnUnitCircle(int i)
@@ -130,36 +153,139 @@ namespace QuickChat.RadialMenu
 		/// <summary>
 		/// Creates a blank RadialMenu. Recommended use of an initializer {}
 		/// </summary>
-		public RadialMenu() { }
+		public RadialMenu(bool autoRegister = true)
+		{
+			if (autoRegister) RadialMenuManager.RegisterRadialMenu(this);
+		}
 		
 		/// <summary>
 		/// Creates a blank RadialMenu with a name. Recommended use of an initializer {}
 		/// </summary>
 		/// <param name="name">Name of the RadialMenu.</param>
-		public RadialMenu(string name)
+		public RadialMenu(string name, bool autoRegister = true)
 		{
 			this.name = name;
+
+			if (autoRegister) RadialMenuManager.RegisterRadialMenu(this);
 		}
 
 		public class RadialButton
 		{
-			public GameObject gameObject;
-			public Transform transform;
-			public RectTransform rectTransform;
+			public GameObject gameObject { get; private set; } = null;
+			public Transform transform { get; private set; } = null;
+			public RectTransform rectTransform { get; private set; } = null;
 
-			public Sprite buttonSprite;
-			public Color buttonColor = Color.white;
+			public Image image { get; private set; } = null;
+			public Button button { get; private set; } = null;
+			public TextMeshProUGUI textField { get; private set; } = null;
 
-			public string text = string.Empty;
-			public string displayText = string.Empty;
-			public Func<char> punctuation = () => '.';
+			private Sprite m_buttonSprite = null;
+			public Sprite buttonSprite
+			{
+				get { return m_buttonSprite; }
+				set
+				{
+					if (created && image != null) image.sprite = value;
+					m_buttonSprite = value;
+				}
+			}
 
-			public Vector2 positionOverride = Vector2.zero;
-			public Vector2 sizeDelta = Vector2.one * 75;
+			private Color m_buttonColor = Color.white;
+			public Color buttonColor
+			{
+				get { return m_buttonColor; }
+				set
+				{
+					if (created && image != null) image.color = value;
+					m_buttonColor = value;
+				}
+			}
 
-			public float textSize = 12f;
-			public Color textColor = Color.black;
-			public TextAlignmentOptions textAlignment = TextAlignmentOptions.Center;
+			private string m_text = string.Empty;
+			public string text
+			{
+				get { return m_text; }
+				set
+				{
+					string trimmed = value.Trim();
+
+					if (created && textField != null) textField.text = displayText == string.Empty ? $"\"{trimmed}\"" : displayText;
+					m_text = trimmed;
+				}
+			}
+
+			private string m_displayText = string.Empty;
+			public string displayText
+			{
+				get { return m_displayText; }
+				set
+				{
+					if (created && textField != null) textField.text = displayText == string.Empty ? $"\"{value}\"" : displayText;
+					m_displayText = value;
+				}
+			}
+
+			private Func<char> m_punctuation = () => '.';
+			public Func<char> punctuation
+			{
+				get { return m_punctuation; }
+				set { m_punctuation = value; }
+			}
+
+			private Vector2 m_positionOverride = Vector2.zero;
+			public Vector2 positionOverride
+			{
+				get { return m_positionOverride; }
+				set
+				{
+					m_positionOverride = value;
+					if (created && parentRadialMenu != null) parentRadialMenu.EvenlySplitOnUnitCircle();
+				}
+			}
+
+			private Vector2 m_sizeDelta = Vector2.one * 75;
+			public Vector2 sizeDelta
+			{
+				get { return m_sizeDelta; }
+				set
+				{
+					if (created && rectTransform != null) rectTransform.sizeDelta = value;
+					m_sizeDelta = value;
+				}
+			}
+
+			private float m_textSize = 12f;
+			public float textSize
+			{
+				get { return m_textSize; }
+				set
+				{
+					if (created && textField != null) textField.fontSize = value;
+					m_textSize = value;
+				}
+			}
+
+			private Color m_textColor = Color.black;
+			public Color textColor
+			{
+				get { return m_textColor; }
+				set
+				{
+					if (created && textField != null) textField.color = value;
+					m_textColor = value;
+				}
+			}
+
+			private TextAlignmentOptions m_textAlignment = TextAlignmentOptions.Center;
+			public TextAlignmentOptions textAlignment
+			{
+				get { return m_textAlignment; }
+				set
+				{
+					if (created && textField != null) textField.alignment = value;
+					m_textAlignment = value;
+				}
+			}
 
 			public RadialMenu parentRadialMenu;
 			public Func<RadialMenu> connectingRadialMenu = null;
@@ -192,7 +318,7 @@ namespace QuickChat.RadialMenu
 				Transform textFieldTransform = gameObject.transform;
 				textFieldTransform.SetParent(transform, false);
 
-				TextMeshProUGUI textField = gameObject.AddComponent<TextMeshProUGUI>();
+				textField = gameObject.AddComponent<TextMeshProUGUI>();
 				textField.text = displayText == string.Empty ? $"\"{text}\"" : displayText;
 				textField.fontSize = textSize;
 				textField.color = textColor;
@@ -218,17 +344,17 @@ namespace QuickChat.RadialMenu
 
 				CreateTextField();
 
-				Image radialButtonImage = gameObject.AddComponent<Image>();
-				radialButtonImage.sprite = buttonSprite;
-				radialButtonImage.color = buttonColor;
+				image = gameObject.AddComponent<Image>();
+				image.sprite = buttonSprite;
+				image.color = buttonColor;
 
-				Button radialButton = gameObject.AddComponent<Button>();
-				radialButton.image = radialButtonImage;
-				radialButton.onClick.AddListener(OnClick);
+				button = gameObject.AddComponent<Button>();
+				button.image = image;
+				button.onClick.AddListener(OnClick);
 
 				text = text.Trim();
 
-				rectTransform = radialButton.transform as RectTransform;
+				rectTransform = button.transform as RectTransform;
 				rectTransform.sizeDelta = sizeDelta;
 			}
 

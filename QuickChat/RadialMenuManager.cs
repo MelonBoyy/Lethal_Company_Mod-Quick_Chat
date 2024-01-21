@@ -88,6 +88,8 @@ namespace QuickChat.RadialMenu
 		/// <param name="radialMenu">The RadialMenu to register.</param>
 		public static void RegisterRadialMenu(RadialMenu radialMenu)
 		{
+			if (RadialMenuRegistry.Contains(radialMenu)) return;
+
 			RadialMenuRegistry.Add(radialMenu);
 		}
 

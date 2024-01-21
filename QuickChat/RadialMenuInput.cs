@@ -51,7 +51,7 @@ namespace QuickChat.RadialMenu
 
 		[HarmonyPatch(typeof(HUDManager), "CanPlayerScan")]
 		[HarmonyPrefix]
-		static bool PingScanBackMenuPatch()
+		static bool PingScanRadialMenuOpenPatch()
 		{
 			if (RadialMenuManager.RadialMenuOpen) return false;
 
