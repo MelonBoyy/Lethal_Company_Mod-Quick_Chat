@@ -170,17 +170,6 @@ namespace QuickChat.RadialMenu
 			};
 
 			RadialMenuManager.MainMenu.AddRadialButton(new RadialMenu.RadialButton(defaultMenu));
-
-			RadialMenuManager.RegisterRadialMenu(positionsMenu);
-			RadialMenuManager.RegisterRadialMenu(playersMenu);
-			RadialMenuManager.RegisterRadialMenu(monstersMenu2);
-			RadialMenuManager.RegisterRadialMenu(monstersMenu);
-			RadialMenuManager.RegisterRadialMenu(commandsMenu);
-			RadialMenuManager.RegisterRadialMenu(questionsMenu);
-			RadialMenuManager.RegisterRadialMenu(observationsMenu);
-			RadialMenuManager.RegisterRadialMenu(urgentMenu);
-			RadialMenuManager.RegisterRadialMenu(answersMenu);
-			RadialMenuManager.RegisterRadialMenu(defaultMenu);
 		}
 
 		private static void PerformEmoteFix(int emoteIndex)

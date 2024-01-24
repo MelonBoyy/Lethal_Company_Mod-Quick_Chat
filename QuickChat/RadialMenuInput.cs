@@ -11,15 +11,17 @@ namespace QuickChat.RadialMenu
 	public class RadialMenuInput
 	{
 		internal static InputAction RadialMenuToggleAction = new InputAction("Open", type: InputActionType.Button, binding: "<Keyboard>/alt");
-		internal static InputAction RadialMenuCloseAction = new InputAction("Close", type: InputActionType.Button, binding: "<Mouse>/rightButton");
+		internal static InputAction RadialMenuGoBackAction = new InputAction("Close", type: InputActionType.Button, binding: "<Mouse>/rightButton");
 
 		internal static void Init()
 		{
+			RadialMenuConfig.UpdateBindings();
+
 			RadialMenuToggleAction.Enable();
-			RadialMenuCloseAction.Enable();
+			RadialMenuGoBackAction.Enable();
 
 			RadialMenuToggleAction.performed += RadialMenuToggleAction_performed;
-			RadialMenuCloseAction.performed += RadialMenuCloseAction_performed;
+			RadialMenuGoBackAction.performed += RadialMenuGoBackAction_performed;
 
 			Cursor.lockState = CursorLockMode.Locked;
 		}
@@ -27,10 +29,10 @@ namespace QuickChat.RadialMenu
 		internal static void DeInit()
 		{
 			RadialMenuToggleAction.Disable();
-			RadialMenuCloseAction.Disable();
+			RadialMenuGoBackAction.Disable();
 
 			RadialMenuToggleAction.performed -= RadialMenuToggleAction_performed;
-			RadialMenuCloseAction.performed -= RadialMenuCloseAction_performed;
+			RadialMenuGoBackAction.performed -= RadialMenuGoBackAction_performed;
 		}
 
 		private static void RadialMenuToggleAction_performed(InputAction.CallbackContext ctx)
@@ -43,7 +45,7 @@ namespace QuickChat.RadialMenu
 			RadialMenuHUD.ToggleRadialMenu(RadialMenuManager.RadialMenuOpen);
 		}
 
-		private static void RadialMenuCloseAction_performed(InputAction.CallbackContext ctx)
+		private static void RadialMenuGoBackAction_performed(InputAction.CallbackContext ctx)
 		{
 			RadialMenuManager.GoBackMenu();
 			RadialMenuManager.UpdateChat();
