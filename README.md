@@ -29,7 +29,7 @@
 
 ### External Modding Radial Menu
 
-**Documentation coming soon**
+LINK TO DOCUMENTATION: [**Them Docs**](https://github.com/MelonBoyy/Lethal_Company_Mod-Quick_Chat/wiki)
 
 ## Shortcuts
 
