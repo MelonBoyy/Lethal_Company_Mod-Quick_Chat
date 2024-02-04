@@ -1,22 +1,39 @@
-# Lethal-Company-Mod_Quick-Chat
-Very Configurable TextChat Shortcuts
-
-**For the Official Download: https://thunderstore.io/c/lethal-company/p/MushroomMan/QuickChat/**
-
-# Build Requirements
-Microsoft Visual Studio 2022 or Above
-.NET Framework 4.8.1 or Higher
-
-# Thunderstore Description:
 # Quick Chat
 
-Features:
-* Easy and Very Configurable
-* Clientside (Doesn't need everyone to download)
+## Table of Contents
+* [About](#about)
+* [How To Use](#how-to-use)
+    * [Radial Menu](#radial-menu)
+        * [External Modding](#external-modding-radial-menu)
+    * [Shortcuts](#shortcuts)
+        * [Simple Mode](#shortcuts-simple-mode)
+        * [Advanced Mode](#shortcuts-advanced-mode)
+    * [Terminal](#terminal)
+* [Credits](#credits)
 
-# How To Use
+# About
 
-**You must have LethalConfig to use this mod! https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/**
+**Allows users without microphones to communicate on the fly with a sentence-builder Radial Menu and configurable chat shortcuts for custom phrases**
+
+# How to Use
+
+## Radial Menu
+
+**Press your specific binding** (Default : `ALT`) **in order to open and close the Radial Menu and click on the buttons to traverse and connect nouns, verbs, etc.**
+
+![RadialMenu 1](https://github.com/MelonBoyy/Lethal_Company_Mod-Quick_Chat/blob/main/RadialMenu1.gif?raw=true)
+
+**Press your specific binding** (Default : `RIGHT CLICK`) **in order to go back one menu in case you make a mistake.**
+
+![RadialMenu 2](https://github.com/MelonBoyy/Lethal_Company_Mod-Quick_Chat/blob/main/RadialMenu2.gif?raw=true)
+
+### External Modding Radial Menu
+
+**Documentation coming soon**
+
+## Shortcuts
+
+**You must have LethalConfig to use custom shortcuts in this mod! https://thunderstore.io/c/lethal-company/p/AinaVT/LethalConfig/**
 
 Launch Lethal Company and make sure you can see the LethalConfig button on the main menu.
 Open the LethalConfig and scroll till you find "Quick Chat"
@@ -26,7 +43,7 @@ Open the LethalConfig and scroll till you find "Quick Chat"
 
 There are still two modes that can be used however, `Simple` or `Advanced`. Those are covered down below.
 
-# How to Use (Simple Mode)
+### Shortcuts Simple Mode
 
 **You will need to restart your game after changing the amount of Simple Shortcuts you want and theres a limit (20) to how many shortcuts you can have.**
 
@@ -36,7 +53,7 @@ Changing the Simple Shortcuts Amount at the top will require a game restart in o
 To assign a shortcut to a result, you change the shortcut in the designated category, and then change the result.
 ![Simple Shortcuts section in Config](https://imgur.com/6OJe5KE.png)
 
-# How to Use (Advanced Mode)
+### Shortcuts Advanced Mode
 
 **This is a bit harder to follow but you can have nigh-infinite shortcuts with no restarts needed to add more.**
 
@@ -51,3 +68,16 @@ Then after you restart your game you should see this in your Quick Chat Config M
 `:` separates the Shortcut and Result. Shortcut must be on the left and Result must be on the right.
 
 `,` creates a new Shortcut
+
+## Terminal
+
+**Requires TerminalApi (https://thunderstore.io/c/lethal-company/p/NotAtomicBomb/TerminalApi/)**
+
+If you go to the Terminal and type `qcview`, you'll be able to see all your Shortcuts!
+![Shortcuts on Terminal](https://imgur.com/muRosTh.png)
+
+# Credits
+
+**AlFungy** - Code
+
+**Drizz** - Icon
