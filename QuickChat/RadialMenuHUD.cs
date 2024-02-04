@@ -99,7 +99,7 @@ namespace QuickChat.RadialMenu
 
 		public static void UpdateChatPreview(string text)
 		{
-			HUDManager.Instance.chatTextField.text = text == string.Empty ? "Press \"/\" to talk." : $"<color=white>{text}</color>";
+			HUDManager.Instance.chatTextField.text = string.Empty;
 			HUDManager.Instance.chatTextField.MoveToEndOfLine(false, false);
 
 			HUDManager.Instance.PingHUDElement(HUDManager.Instance.Chat, 1f, 1f, 1f);

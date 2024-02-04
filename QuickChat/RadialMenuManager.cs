@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using GameNetcodeStuff;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ namespace QuickChat.RadialMenu
 		public static event RadialMenuLoadingEvent OnRadialMenuPreRegister;
 		public static event RadialMenuLoadingEvent OnRadialMenuPostRegister;
 		public static event RadialMenuLoadingEvent OnRadialMenuReady;
+		public static event RadialMenuLoadingEvent OnRadialMenuPreExit;
+		public static event RadialMenuLoadingEvent OnRadialMenuExit;
 
 		[HarmonyPatch(typeof(RoundManager), "Awake")]
 		[HarmonyPostfix]
@@ -62,6 +65,8 @@ namespace QuickChat.RadialMenu
 		[HarmonyPostfix]
 		static void ResetPatch()
 		{
+			OnRadialMenuPreExit?.Invoke();
+
 			foreach (RadialMenu menu in RadialMenuRegistry)
 			{
 				menu.RemoveRadialMenu();
@@ -69,6 +74,8 @@ namespace QuickChat.RadialMenu
 
 			RadialMenuInput.DeInit();
 			RadialMenuHUD.DeInit();
+
+			OnRadialMenuExit?.Invoke();
 		}
 
 		/// <summary>

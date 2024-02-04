@@ -81,6 +81,7 @@ namespace QuickChat
 				RadialMenuHUD.RadialMenuHUDRecentText.fontSizeMax = QuickChatRadialMenuRecentTextMaxSize.Value;
 			};
 
+
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuBackgroundAlphaField);
 
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuRecentTextMinSizeField);

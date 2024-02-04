@@ -59,6 +59,13 @@ namespace QuickChat.RadialMenu
 
 			return true;
 		}
+
+		[HarmonyPatch(typeof(PlayerControllerB), "ActivateItem_performed")]
+		[HarmonyPrefix]
+		static void ActivateItemRadialMenuOpenPatch()
+		{
+			if (RadialMenuManager.RadialMenuOpen) return;
+		}
 	}
 
 }

@@ -67,14 +67,11 @@ namespace QuickChat.RadialMenu
 		/// <param name="radialButtons"></param>
 		public void UpdateRadialButtons(List<RadialButton> radialButtons)
 		{
-			if (!created) return;
-
-			this.radialButtons.ForEach(button => button.QuoteOnQuoteDestroyRadialButton());
+			if (created) this.radialButtons.ForEach(button => button.QuoteOnQuoteDestroyRadialButton());
 			this.radialButtons.Clear();
 
 			this.radialButtons = radialButtons;
-			this.radialButtons.ForEach(button => button.SetupRadialButton(this));
-			EvenlySplitOnUnitCircle();
+			UpdateRadialButtons();
 		}
 
 		/// <summary>
@@ -138,8 +135,7 @@ namespace QuickChat.RadialMenu
 			transform = gameObject.transform;
 			transform.SetParent(parentTransform, false);
 
-			radialButtons.ForEach(button => button.SetupRadialButton(this));
-			EvenlySplitOnUnitCircle();
+			UpdateRadialButtons();
 
 			gameObject.SetActive(false);
 		}
@@ -432,6 +428,7 @@ namespace QuickChat.RadialMenu
 			public RadialButton(string text, char punctuation)
 			{
 				this.text = text;
+				this.displayText = $"\"{text}{punctuation}\"";
 				this.punctuation = () => punctuation;
 			}
 
