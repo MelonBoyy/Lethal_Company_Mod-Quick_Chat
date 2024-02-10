@@ -46,6 +46,6 @@ namespace QuickChat
 	{
 		public const string ModGUID = "alfungy.quickchat";
 		public const string ModName = "Quick Chat";
-		public const string ModVersion = "2.0.1";
+		public const string ModVersion = "2.0.2";
 	}
 }

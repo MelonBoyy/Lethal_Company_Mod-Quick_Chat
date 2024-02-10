@@ -22,8 +22,8 @@ namespace QuickChat.RadialMenu
 			}
 			set
 			{
-				UpdateRadialButtons(value);
 				m_radialButtons = value;
+				UpdateRadialButtons(m_radialButtons);
 			}
 		}
 
@@ -80,10 +80,10 @@ namespace QuickChat.RadialMenu
 		/// <param name="radialButtons">The new list of radialButtons to replace the old ones.</param>
 		public void UpdateRadialButtons(List<RadialButton> radialButtons)
 		{
-			if (created) this.radialButtons.ForEach(button => button.QuoteOnQuoteDestroyRadialButton());
-			this.radialButtons.Clear();
+			if (created) m_radialButtons.ForEach(button => button.QuoteOnQuoteDestroyRadialButton());
+			m_radialButtons.Clear();
 
-			this.radialButtons = radialButtons;
+			m_radialButtons = radialButtons;
 			UpdateRadialButtons();
 		}
 
