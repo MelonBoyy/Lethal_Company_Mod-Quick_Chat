@@ -10,10 +10,22 @@ namespace QuickChat.RadialMenu
 {
 	public class RadialMenu
 	{
-		public GameObject gameObject;
-		public Transform transform;
+		public GameObject gameObject { get; private set; } = null;
+		public Transform transform { get; private set; } = null;
 
-		public List<RadialButton> radialButtons = new List<RadialButton>();
+		private List<RadialButton> m_radialButtons = new List<RadialButton>();
+		public List<RadialButton> radialButtons
+		{
+			get
+			{
+				return m_radialButtons;
+			}
+			set
+			{
+				UpdateRadialButtons(value);
+				m_radialButtons = value;
+			}
+		}
 
 		public string name = "Menu";
 		public bool saveToHistory = true;
@@ -44,7 +56,7 @@ namespace QuickChat.RadialMenu
 
 
 		/// <summary>
-		/// Adds a RadialButton at the end of the "radialButtons" list
+		/// Adds a RadialButton at the end of the "radialButtons" list.
 		/// </summary>
 		/// <param name="button">The RadialButton to add.</param>
 		public void AddRadialButton(RadialButton button)
@@ -53,18 +65,19 @@ namespace QuickChat.RadialMenu
 		}
 
 		/// <summary>
-		/// Inserts a RadialButton at the specified index of the "radialButtons" list
+		/// Inserts a RadialButton at the specified index of the "radialButtons" list.
 		/// </summary>
 		/// <param name="button">The RadialButton to insert.</param>
+		/// /// <param name="i">The index to insert the RadialButton at.</param>
 		public void InsertRadialButton(RadialButton button, int i)
 		{
 			radialButtons.Insert(i, button);
 		}
 
 		/// <summary>
-		/// Updates RadialButtons, replacing all of them with a new list of RadialButtons, setting them up, and splitting them in a circular pattern.
+		/// Updates the "radialButtons" list, replacing all of them with a new list of RadialButtons, setting them up, and splitting them in a circular pattern.
 		/// </summary>
-		/// <param name="radialButtons"></param>
+		/// <param name="radialButtons">The new list of radialButtons to replace the old ones.</param>
 		public void UpdateRadialButtons(List<RadialButton> radialButtons)
 		{
 			if (created) this.radialButtons.ForEach(button => button.QuoteOnQuoteDestroyRadialButton());
@@ -75,7 +88,7 @@ namespace QuickChat.RadialMenu
 		}
 
 		/// <summary>
-		/// Updates RadialButtons, setting all of them up and evenly splitting them in a circular pattern.
+		/// Updates the "radialButtons" list, setting all of them up and evenly splitting them in a circular pattern.
 		/// </summary>
 		public void UpdateRadialButtons()
 		{
@@ -149,15 +162,17 @@ namespace QuickChat.RadialMenu
 		/// <summary>
 		/// Creates a blank RadialMenu. Recommended use of an initializer {}
 		/// </summary>
+		/// <param name="autoRegister">If the RadialMenu should be automatically registered on construction.</param>
 		public RadialMenu(bool autoRegister = true)
 		{
 			if (autoRegister) RadialMenuManager.RegisterRadialMenu(this);
 		}
-		
+
 		/// <summary>
 		/// Creates a blank RadialMenu with a name. Recommended use of an initializer {}
 		/// </summary>
 		/// <param name="name">Name of the RadialMenu.</param>
+		/// <param name="autoRegister">If the RadialMenu should be automatically registered on construction.</param>
 		public RadialMenu(string name, bool autoRegister = true)
 		{
 			this.name = name;
@@ -292,8 +307,8 @@ namespace QuickChat.RadialMenu
 			private string expressText => displayText == string.Empty ? $"\"{text}\"" : displayText;
 
 			public delegate void RadialButtonClicked(RadialMenu radialMenu, RadialButton radialButton);
-			public static event RadialButtonClicked PreRadialButtonClicked;
-			public static event RadialButtonClicked PostRadialButtonClicked;
+			public event RadialButtonClicked PreRadialButtonClicked;
+			public event RadialButtonClicked PostRadialButtonClicked;
 
 			public bool saveToHistory = true;
 			private bool created = false;

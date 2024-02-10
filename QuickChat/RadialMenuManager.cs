@@ -32,12 +32,12 @@ namespace QuickChat.RadialMenu
 		internal static bool RadialMenuOpen = false;
 
 
-		public delegate void RadialMenuLoadingEvent();
-		public static event RadialMenuLoadingEvent OnRadialMenuPreRegister;
-		public static event RadialMenuLoadingEvent OnRadialMenuPostRegister;
-		public static event RadialMenuLoadingEvent OnRadialMenuReady;
-		public static event RadialMenuLoadingEvent OnRadialMenuPreExit;
-		public static event RadialMenuLoadingEvent OnRadialMenuExit;
+		public delegate void RadialMenuMainLoadingEvent();
+		public static event RadialMenuMainLoadingEvent OnMainMenuPreRegister;
+		public static event RadialMenuMainLoadingEvent OnMainMenuPostRegister;
+		public static event RadialMenuMainLoadingEvent OnReady;
+		public static event RadialMenuMainLoadingEvent OnPreExit;
+		public static event RadialMenuMainLoadingEvent OnPostExit;
 
 		[HarmonyPatch(typeof(RoundManager), "Awake")]
 		[HarmonyPostfix]
@@ -46,9 +46,9 @@ namespace QuickChat.RadialMenu
 			RadialMenuHUD.Init();
 			RadialMenuInput.Init();
 
-			OnRadialMenuPreRegister?.Invoke();
+			OnMainMenuPreRegister?.Invoke();
 			RegisterRadialMenu(MainMenu);
-			OnRadialMenuPostRegister?.Invoke();
+			OnMainMenuPostRegister?.Invoke();
 
 			foreach (RadialMenu menu in RadialMenuRegistry)
 			{
@@ -58,14 +58,14 @@ namespace QuickChat.RadialMenu
 			SetCurrentMenu(MainMenu);
 			RefreshMenu();
 
-			OnRadialMenuReady?.Invoke();
+			OnReady?.Invoke();
 		}
 
 		[HarmonyPatch(typeof(QuickMenuManager), nameof(QuickMenuManager.LeaveGameConfirm))]
 		[HarmonyPostfix]
 		static void ResetPatch()
 		{
-			OnRadialMenuPreExit?.Invoke();
+			OnPreExit?.Invoke();
 
 			foreach (RadialMenu menu in RadialMenuRegistry)
 			{
@@ -75,7 +75,7 @@ namespace QuickChat.RadialMenu
 			RadialMenuInput.DeInit();
 			RadialMenuHUD.DeInit();
 
-			OnRadialMenuExit?.Invoke();
+			OnPostExit?.Invoke();
 		}
 
 		/// <summary>

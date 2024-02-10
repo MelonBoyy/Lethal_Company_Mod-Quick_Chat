@@ -37,7 +37,7 @@ namespace QuickChat
 		{
 			Binds();
 
-			QuickChatRadialMenuBackgroundAlpha = Plugin.ConfigR.Bind("Radial Menu Background", "Alpha of Radial Menu background", 200, "The alpha (transparency) of the background when opening the Radial Menu.");
+			QuickChatRadialMenuBackgroundAlpha = Plugin.ConfigF.Bind("Radial Menu Background", "Alpha of Radial Menu background", 200, "The alpha (transparency) of the background when opening the Radial Menu.");
 
 			var quickChatRadialMenuBackgroundAlphaField = new IntSliderConfigItem(QuickChatRadialMenuBackgroundAlpha, new IntSliderOptions()
 			{
@@ -52,8 +52,8 @@ namespace QuickChat
 				RadialMenuHUD.RadialMenuHUDBackground.color = new Color32(0, 0, 0, (byte)QuickChatRadialMenuBackgroundAlpha.Value);
 			};
 
-			QuickChatRadialMenuRecentTextMinSize = Plugin.ConfigR.Bind("Radial Menu Recent Text", "Radial Menu Text Minimum Size", 8, "The minimum size that the recent text can be.");
-			QuickChatRadialMenuRecentTextMaxSize = Plugin.ConfigR.Bind("Radial Menu Recent Text", "Radial Menu Text Maximum Size", 18, "The maximum size that the recent text can be.");
+			QuickChatRadialMenuRecentTextMinSize = Plugin.ConfigF.Bind("Radial Menu Recent Text", "Radial Menu Text Minimum Size", 8, "The minimum size that the recent text can be.");
+			QuickChatRadialMenuRecentTextMaxSize = Plugin.ConfigF.Bind("Radial Menu Recent Text", "Radial Menu Text Maximum Size", 18, "The maximum size that the recent text can be.");
 
 			var quickChatRadialMenuRecentTextMinSizeField = new IntSliderConfigItem(QuickChatRadialMenuRecentTextMinSize, new IntSliderOptions()
 			{
@@ -92,9 +92,9 @@ namespace QuickChat
 
 		internal static void Binds()
 		{
-			QuickChatRadialMenuToggleUseMouse = Plugin.ConfigR.Bind("Radial Menu Binds", "Toggle Open & Close Use Mouse", false, "Whether or not you use the mouse to open the radial menu.");
-			QuickChatRadialMenuToggleKey = Plugin.ConfigR.Bind("Radial Menu Binds", "Toggle Open & Close Key", Key.LeftAlt, "The key used to open and close the radial menu.");
-			QuickChatRadialMenuToggleMouseButton = Plugin.ConfigR.Bind("Radial Menu Binds", "Toggle Open & Close Mouse", MouseButton.Middle, "The mouse button used to open and close the radial menu.");
+			QuickChatRadialMenuToggleUseMouse = Plugin.ConfigF.Bind("Radial Menu Binds", "Toggle Open & Close Use Mouse", false, "Whether or not you use the mouse to open the radial menu.");
+			QuickChatRadialMenuToggleKey = Plugin.ConfigF.Bind("Radial Menu Binds", "Toggle Open & Close Key", Key.LeftAlt, "The key used to open and close the radial menu.");
+			QuickChatRadialMenuToggleMouseButton = Plugin.ConfigF.Bind("Radial Menu Binds", "Toggle Open & Close Mouse", MouseButton.Middle, "The mouse button used to open and close the radial menu.");
 
 			var quickChatRadialMenuToggleUseMouseField = new BoolCheckBoxConfigItem(QuickChatRadialMenuToggleUseMouse, false);
 			QuickChatRadialMenuToggleUseMouse.SettingChanged += (obj, args) =>
@@ -131,9 +131,9 @@ namespace QuickChat
 				ChangeBinding(RadialMenuInput.RadialMenuToggleAction, GetMousePath(QuickChatRadialMenuToggleMouseButton.Value), QuickChatRadialMenuToggleUseMouse.Value);
 			};
 
-			QuickChatRadialMenuGoBackUseMouse = Plugin.ConfigR.Bind("Radial Menu Binds", "Go Back Use Mouse", true, "Whether or not you use the mouse to go back one menu in the radial menu.");
-			QuickChatRadialMenuGoBackKey = Plugin.ConfigR.Bind("Radial Menu Binds", "Go Back Key", Key.R, "The key used to go back one menu in the radial menu.");
-			QuickChatRadialMenuGoBackMouseButton = Plugin.ConfigR.Bind("Radial Menu Binds", "Go Back Mouse", MouseButton.Right, "The mouse button used to go back one menu in the radial menu.");
+			QuickChatRadialMenuGoBackUseMouse = Plugin.ConfigF.Bind("Radial Menu Binds", "Go Back Use Mouse", true, "Whether or not you use the mouse to go back one menu in the radial menu.");
+			QuickChatRadialMenuGoBackKey = Plugin.ConfigF.Bind("Radial Menu Binds", "Go Back Key", Key.R, "The key used to go back one menu in the radial menu.");
+			QuickChatRadialMenuGoBackMouseButton = Plugin.ConfigF.Bind("Radial Menu Binds", "Go Back Mouse", MouseButton.Right, "The mouse button used to go back one menu in the radial menu.");
 
 			var quickChatRadialMenuGoBackUseMouseField = new BoolCheckBoxConfigItem(QuickChatRadialMenuGoBackUseMouse, false);
 			QuickChatRadialMenuGoBackUseMouse.SettingChanged += (obj, args) =>

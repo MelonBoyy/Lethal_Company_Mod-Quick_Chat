@@ -17,12 +17,11 @@ namespace QuickChat
 		private readonly Harmony Harmony = new Harmony(PluginInfo.ModGUID);
 
 		internal static ManualLogSource LogSource = BepInEx.Logging.Logger.CreateLogSource(PluginInfo.ModGUID);
-		internal static ConfigFile ConfigR;
-		internal static PlayerControllerB localPlayerController => GameNetworkManager.Instance.localPlayerController;
+		internal static ConfigFile ConfigF;
 
 		private void Awake()
 		{
-			ConfigR = Config;
+			ConfigF = Config;
 			LogSource.LogInfo($"{PluginInfo.ModName} {PluginInfo.ModVersion} has been loaded!");
 
 			LethalConfigManager.SkipAutoGen();

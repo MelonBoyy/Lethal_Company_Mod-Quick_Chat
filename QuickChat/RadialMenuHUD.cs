@@ -12,6 +12,7 @@ using HarmonyLib;
 using UnityEngine.EventSystems;
 using GameNetcodeStuff;
 using UnityEngine.InputSystem;
+using static QuickChat.RadialMenu.RadialMenuManager;
 
 namespace QuickChat.RadialMenu
 {
@@ -24,8 +25,20 @@ namespace QuickChat.RadialMenu
 
 		internal static Vector2 Center => new Vector2(Screen.width / 2, Screen.height / 2);
 
+		public delegate void RadialMenuHUDLoadingEvent();
+		public static event RadialMenuHUDLoadingEvent OnHUDPreLoaded;
+		public static event RadialMenuHUDLoadingEvent OnHUDPostLoaded;
+		public static event RadialMenuHUDLoadingEvent OnHUDPreUnloaded;
+		public static event RadialMenuHUDLoadingEvent OnHUDPostUnloaded;
+
+		public delegate void RadialMenuHUDTextEvent(string text);
+		public static event RadialMenuHUDTextEvent OnHUDChatPreviewUpdated;
+		public static event RadialMenuHUDTextEvent OnHUDRecentTextUpdated;
+
 		internal static void Init()
 		{
+			OnHUDPreLoaded?.Invoke();
+
 			Transform canvas = GameObject.Find("Systems").transform.Find("UI").transform.Find("Canvas");
 			Transform uiCamera = GameObject.Find("Systems").transform.Find("UI").transform.Find("UICamera");
 
@@ -70,11 +83,17 @@ namespace QuickChat.RadialMenu
 
 			RadialMenuHUDObject.SetActive(false);
 			RadialMenuManager.RadialMenuLoaded = true;
+
+			OnHUDPostLoaded?.Invoke();
 		}
 
 		public static void DeInit()
 		{
+			OnHUDPreUnloaded?.Invoke();
+
 			RadialMenuManager.RadialMenuLoaded = false;
+
+			OnHUDPostUnloaded?.Invoke();
 		}
 
 		public static void ToggleRadialMenu(bool open, bool modifyInput = true)
@@ -103,11 +122,15 @@ namespace QuickChat.RadialMenu
 			HUDManager.Instance.chatTextField.MoveToEndOfLine(false, false);
 
 			HUDManager.Instance.PingHUDElement(HUDManager.Instance.Chat, 1f, 1f, 1f);
+
+			OnHUDChatPreviewUpdated?.Invoke(text);
 		}
 
 		public static void UpdateChatRecentText(string text)
 		{
 			RadialMenuHUDRecentText.text = text;
+
+			OnHUDRecentTextUpdated?.Invoke(text);
 		}
 
 		[HarmonyPatch(typeof(QuickMenuManager), nameof(QuickMenuManager.OpenQuickMenu))]

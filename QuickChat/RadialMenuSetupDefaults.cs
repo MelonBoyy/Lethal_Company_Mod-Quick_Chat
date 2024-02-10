@@ -170,18 +170,18 @@ namespace QuickChat.RadialMenu
 
 			RadialMenuManager.MainMenu.AddRadialButton(new RadialMenu.RadialButton(defaultMenu));
 
-			RadialMenuManager.OnRadialMenuReady += RadialMenuManager_OnRadialMenuReady;
-			RadialMenuManager.OnRadialMenuExit += RadialMenuManager_OnRadialMenuExit;
+			RadialMenuManager.OnReady += RadialMenuManager_OnReady;
+			RadialMenuManager.OnPostExit += RadialMenuManager_OnExit;
 		}
 
-		private static void RadialMenuManager_OnRadialMenuReady()
+		private static void RadialMenuManager_OnReady()
 		{
 			if (GameNetworkManager.Instance.localPlayerController == null) return;
 
 			SetupPlayerMenu(GameNetworkManager.Instance.localPlayerController.quickMenuManager);
 		}
 
-		private static void RadialMenuManager_OnRadialMenuExit()
+		private static void RadialMenuManager_OnExit()
 		{
 			playersMenu.radialButtons.Clear();
 			playersMenu.UpdateRadialButtons();
@@ -203,10 +203,10 @@ namespace QuickChat.RadialMenu
 
 			ConfigEntry<int>[] colorValues = new ConfigEntry<int>[4]
 			{
-				Plugin.ConfigR.Bind($"{connectingMenu.name} RadialMenu Options", "Color R", ConvertToRGB32(radialButton.buttonColor.r), "The Red of the RadialButton Color"),
-				Plugin.ConfigR.Bind($"{connectingMenu.name} RadialMenu Options", "Color G", ConvertToRGB32(radialButton.buttonColor.g), "The Green of the RadialButton Color"),
-				Plugin.ConfigR.Bind($"{connectingMenu.name} RadialMenu Options", "Color B", ConvertToRGB32(radialButton.buttonColor.b), "The Blue of the RadialButton Color"),
-				Plugin.ConfigR.Bind($"{connectingMenu.name} RadialMenu Options", "Color A", ConvertToRGB32(radialButton.buttonColor.a), "The Alpha (Transparency) of the RadialButton Color")
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color R", ConvertToRGB32(radialButton.buttonColor.r), "The Red of the RadialButton Color"),
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color G", ConvertToRGB32(radialButton.buttonColor.g), "The Green of the RadialButton Color"),
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color B", ConvertToRGB32(radialButton.buttonColor.b), "The Blue of the RadialButton Color"),
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color A", ConvertToRGB32(radialButton.buttonColor.a), "The Alpha (Transparency) of the RadialButton Color")
 			};
 
 			var colorValuesOptions = new IntSliderOptions()
@@ -258,7 +258,7 @@ namespace QuickChat.RadialMenu
 		{
 			RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
 
-			ConfigEntry<string> displayTextValue = Plugin.ConfigR.Bind($"{connectingMenu.name} RadialMenu Options", "Display Text", radialButton.displayText, "The Display Text of the Radial Button");
+			ConfigEntry<string> displayTextValue = Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Display Text", radialButton.displayText, "The Display Text of the Radial Button");
 
 			var displayTextField = new TextInputFieldConfigItem(displayTextValue, requiresRestart: false);
 			displayTextValue.SettingChanged += (obj, args) =>
