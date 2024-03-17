@@ -61,7 +61,7 @@ namespace QuickChat.RadialMenu
 			OnReady?.Invoke();
 		}
 
-		[HarmonyPatch(typeof(QuickMenuManager), nameof(QuickMenuManager.LeaveGameConfirm))]
+		[HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.Disconnect))]
 		[HarmonyPostfix]
 		static void ResetPatch()
 		{
