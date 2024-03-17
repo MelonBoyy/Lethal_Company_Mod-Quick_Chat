@@ -15,6 +15,9 @@
 
 **Allows users without microphones to communicate on the fly with a sentence-builder Radial Menu and configurable chat shortcuts for custom phrases**
 
+# WARNING !!!
+**This mod requires the host to also have the mod! Otherwise certain things like the chat character limit patch, and some messages from the radial menu won't display for others!!!**
+
 # How to Use
 
 ## Radial Menu
