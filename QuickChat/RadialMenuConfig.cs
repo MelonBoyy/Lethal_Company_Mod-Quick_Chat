@@ -86,8 +86,6 @@ namespace QuickChat
 
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuRecentTextMinSizeField);
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuRecentTextMaxSizeField);
-
-			
 		}
 
 		internal static void Binds()
@@ -224,6 +222,81 @@ namespace QuickChat
 					ChangeBinding(RadialMenuInput.RadialMenuGoBackAction, GetMousePath(QuickChatRadialMenuGoBackMouseButton.Value), QuickChatRadialMenuGoBackUseMouse.Value);
 			}
 			catch { }
+		}
+
+		public static void ColorConfigFromButton(RadialMenu.RadialMenu.RadialButton radialButton)
+		{
+			RadialMenu.RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
+
+			ConfigEntry<int>[] colorValues = new ConfigEntry<int>[4]
+			{
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color R", ConvertToRGB32(radialButton.buttonColor.r), "The Red of the RadialButton Color"),
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color G", ConvertToRGB32(radialButton.buttonColor.g), "The Green of the RadialButton Color"),
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color B", ConvertToRGB32(radialButton.buttonColor.b), "The Blue of the RadialButton Color"),
+				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color A", ConvertToRGB32(radialButton.buttonColor.a), "The Alpha (Transparency) of the RadialButton Color")
+			};
+
+			var colorValuesOptions = new IntSliderOptions()
+			{
+				Min = 0,
+				Max = 255,
+				RequiresRestart = false
+			};
+
+			var colorValuesFieldR = new IntSliderConfigItem(colorValues[0], colorValuesOptions);
+			colorValues[0].SettingChanged += (obj, args) =>
+			{
+				radialButton.buttonColor = new Color(ConvertToRGB(colorValues[0].Value), radialButton.buttonColor.g, radialButton.buttonColor.b, radialButton.buttonColor.a);
+			};
+
+			var colorValuesFieldG = new IntSliderConfigItem(colorValues[1], colorValuesOptions);
+			colorValues[1].SettingChanged += (obj, args) =>
+			{
+				radialButton.buttonColor = new Color(radialButton.buttonColor.r, ConvertToRGB(colorValues[1].Value), radialButton.buttonColor.b, radialButton.buttonColor.a);
+			};
+
+			var colorValuesFieldB = new IntSliderConfigItem(colorValues[2], colorValuesOptions);
+			colorValues[2].SettingChanged += (obj, args) =>
+			{
+				radialButton.buttonColor = new Color(radialButton.buttonColor.r, radialButton.buttonColor.g, ConvertToRGB(colorValues[2].Value), radialButton.buttonColor.a);
+			};
+
+			var colorValuesFieldA = new IntSliderConfigItem(colorValues[3], colorValuesOptions);
+			colorValues[3].SettingChanged += (obj, args) =>
+			{
+				radialButton.buttonColor = new Color(radialButton.buttonColor.r, radialButton.buttonColor.g, radialButton.buttonColor.b, ConvertToRGB(colorValues[3].Value));
+			};
+
+			LethalConfigManager.AddConfigItem(colorValuesFieldR);
+			LethalConfigManager.AddConfigItem(colorValuesFieldG);
+			LethalConfigManager.AddConfigItem(colorValuesFieldB);
+			LethalConfigManager.AddConfigItem(colorValuesFieldA);
+		}
+
+		public static void DisplayTextConfigFromButton(RadialMenu.RadialMenu.RadialButton radialButton)
+		{
+			RadialMenu.RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
+
+			ConfigEntry<string> displayTextValue = Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Display Text", radialButton.displayText, "The Display Text of the Radial Button");
+
+			var displayTextField = new TextInputFieldConfigItem(displayTextValue, requiresRestart: false);
+			displayTextValue.SettingChanged += (obj, args) =>
+			{
+
+				radialButton.displayText = displayTextValue.Value;
+			};
+
+			LethalConfigManager.AddConfigItem(displayTextField);
+		}
+
+		private static int ConvertToRGB32(float colorValue)
+		{
+			return (int)(colorValue * 255);
+		}
+
+		private static float ConvertToRGB(int colorValue)
+		{
+			return (float)colorValue / 255;
 		}
 	}
 }

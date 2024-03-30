@@ -1,25 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 using HarmonyLib;
-using GameNetcodeStuff;
-using System.Xml.Linq;
-using BepInEx.Configuration;
-using UnityEngine.InputSystem.Composites;
-using LethalConfig.ConfigItems;
-using LethalConfig.ConfigItems.Options;
-using LethalConfig;
 
 namespace QuickChat.RadialMenu
 {
 	public class RadialMenuSetupDefaults
 	{
 		public static RadialMenu positionsMenu = new RadialMenu("Positions");
-		public static RadialMenu playersMenu = new RadialMenu("Players");
 		public static RadialMenu monstersMenu2 = new RadialMenu("Monsters 2")
 		{
 			saveToHistory = false,
@@ -48,7 +37,6 @@ namespace QuickChat.RadialMenu
 				new RadialMenu.RadialButton(commandsMenu, Color.magenta),
 				new RadialMenu.RadialButton(urgentMenu, Color.red),
 				new RadialMenu.RadialButton(answersMenu, Color.green),
-				new RadialMenu.RadialButton(playersMenu, Color.blue),
 				new RadialMenu.RadialButton(greetingsMenu, Color.white)
 			};
 
@@ -164,27 +152,11 @@ namespace QuickChat.RadialMenu
 
 			foreach (RadialMenu.RadialButton button in defaultMenuButtons)
 			{
-				DisplayTextConfigFromButton(button, defaultMenuButtons.IndexOf(button));
-				ColorConfigFromButton(button, defaultMenuButtons.IndexOf(button));
+				RadialMenuConfig.DisplayTextConfigFromButton(button);
+				RadialMenuConfig.ColorConfigFromButton(button);
 			}
 
 			RadialMenuManager.MainMenu.AddRadialButton(new RadialMenu.RadialButton(defaultMenu));
-
-			RadialMenuManager.OnReady += RadialMenuManager_OnReady;
-			RadialMenuManager.OnPostExit += RadialMenuManager_OnExit;
-		}
-
-		private static void RadialMenuManager_OnReady()
-		{
-			if (GameNetworkManager.Instance.localPlayerController == null) return;
-
-			SetupPlayerMenu(GameNetworkManager.Instance.localPlayerController.quickMenuManager);
-		}
-
-		private static void RadialMenuManager_OnExit()
-		{
-			playersMenu.radialButtons.Clear();
-			playersMenu.UpdateRadialButtons();
 		}
 
 		private static void PerformEmoteFix(int emoteIndex)
@@ -195,119 +167,6 @@ namespace QuickChat.RadialMenu
 			localPlayer.performingEmote = true;
 			localPlayer.playerBodyAnimator.SetInteger("emoteNumber", emoteIndex);
 			localPlayer.StartPerformingEmoteServerRpc();
-		}
-
-		private static void ColorConfigFromButton(RadialMenu.RadialButton radialButton, int i)
-		{
-			RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
-
-			ConfigEntry<int>[] colorValues = new ConfigEntry<int>[4]
-			{
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color R", ConvertToRGB32(radialButton.buttonColor.r), "The Red of the RadialButton Color"),
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color G", ConvertToRGB32(radialButton.buttonColor.g), "The Green of the RadialButton Color"),
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color B", ConvertToRGB32(radialButton.buttonColor.b), "The Blue of the RadialButton Color"),
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color A", ConvertToRGB32(radialButton.buttonColor.a), "The Alpha (Transparency) of the RadialButton Color")
-			};
-
-			var colorValuesOptions = new IntSliderOptions()
-			{
-				Min = 0,
-				Max = 255,
-				RequiresRestart = false
-			};
-
-			var colorValuesFieldR = new IntSliderConfigItem(colorValues[0], colorValuesOptions);
-			colorValues[0].SettingChanged += (obj, args) =>
-			{
-				RadialMenu.RadialButton button = defaultMenuButtons[i];
-
-				button.buttonColor = new Color(ConvertToRGB(colorValues[0].Value), button.buttonColor.g, button.buttonColor.b, button.buttonColor.a);
-			};
-
-			var colorValuesFieldG = new IntSliderConfigItem(colorValues[1], colorValuesOptions);
-			colorValues[1].SettingChanged += (obj, args) =>
-			{
-				RadialMenu.RadialButton button = defaultMenuButtons[i];
-
-				button.buttonColor = new Color(button.buttonColor.r, ConvertToRGB(colorValues[1].Value), button.buttonColor.b, button.buttonColor.a);
-			};
-
-			var colorValuesFieldB = new IntSliderConfigItem(colorValues[2], colorValuesOptions);
-			colorValues[2].SettingChanged += (obj, args) =>
-			{
-				RadialMenu.RadialButton button = defaultMenuButtons[i];
-
-				button.buttonColor = new Color(button.buttonColor.r, button.buttonColor.g, ConvertToRGB(colorValues[2].Value), button.buttonColor.a);
-			};
-
-			var colorValuesFieldA = new IntSliderConfigItem(colorValues[3], colorValuesOptions);
-			colorValues[3].SettingChanged += (obj, args) =>
-			{
-				RadialMenu.RadialButton button = defaultMenuButtons[i];
-
-				button.buttonColor = new Color(button.buttonColor.r, button.buttonColor.g, button.buttonColor.b, ConvertToRGB(colorValues[3].Value));
-			};
-
-			LethalConfigManager.AddConfigItem(colorValuesFieldR);
-			LethalConfigManager.AddConfigItem(colorValuesFieldG);
-			LethalConfigManager.AddConfigItem(colorValuesFieldB);
-			LethalConfigManager.AddConfigItem(colorValuesFieldA);
-		}
-
-		private static void DisplayTextConfigFromButton(RadialMenu.RadialButton radialButton, int i)
-		{
-			RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
-
-			ConfigEntry<string> displayTextValue = Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Display Text", radialButton.displayText, "The Display Text of the Radial Button");
-
-			var displayTextField = new TextInputFieldConfigItem(displayTextValue, requiresRestart: false);
-			displayTextValue.SettingChanged += (obj, args) =>
-			{
-				RadialMenu.RadialButton button = defaultMenuButtons[i];
-
-				button.displayText = displayTextValue.Value;
-			};
-
-			LethalConfigManager.AddConfigItem(displayTextField);
-		}
-
-		private static int ConvertToRGB32(float colorValue)
-		{
-			return (int)(colorValue * 255);
-		}
-
-		private static float ConvertToRGB(int colorValue)
-		{
-			return (float)colorValue / 255;
-		}
-
-		[HarmonyPatch(typeof(QuickMenuManager), nameof(QuickMenuManager.AddUserToPlayerList))]
-		[HarmonyPostfix]
-		static void SetupPlayerMenuJoin(QuickMenuManager __instance)
-		{
-			SetupPlayerMenu(__instance);
-		}
-
-		[HarmonyPatch(typeof(QuickMenuManager), nameof(QuickMenuManager.RemoveUserFromPlayerList))]
-		[HarmonyPostfix]
-		static void SetupPlayerMenuLeave(QuickMenuManager __instance)
-		{
-			SetupPlayerMenu(__instance);
-		}
-
-		static void SetupPlayerMenu(QuickMenuManager __instance)
-		{
-			List<RadialMenu.RadialButton> radialButtons = new List<RadialMenu.RadialButton>();
-
-			foreach (PlayerListSlot playerListSlot in __instance.playerListSlots)
-			{
-				playersMenu.AddRadialButton(new RadialMenu.RadialButton()
-				{
-					text = playerListSlot.usernameHeader.text
-				});
-			}
-
-			playersMenu.UpdateRadialButtons(radialButtons);
 		}
 	}
 
