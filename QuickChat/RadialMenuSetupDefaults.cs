@@ -3,6 +3,8 @@
 using UnityEngine;
 
 using HarmonyLib;
+using LethalConfig.ConfigItems;
+using LethalConfig;
 
 namespace QuickChat.RadialMenu
 {
@@ -150,10 +152,29 @@ namespace QuickChat.RadialMenu
 
 			defaultMenu.UpdateRadialButtons(defaultMenuButtons);
 
+			// The item containers so we can loop through them later
+			List<TextInputFieldConfigItem> displayTextConfigItems = new List<TextInputFieldConfigItem>();
+			List<IntSliderConfigItem[]> colorConfigItems = new List<IntSliderConfigItem[]>();
+
 			foreach (RadialMenu.RadialButton button in defaultMenuButtons)
 			{
-				RadialMenuConfig.DisplayTextConfigFromButton(button);
-				RadialMenuConfig.ColorConfigFromButton(button);
+				displayTextConfigItems.Add(RadialMenuConfig.DisplayTextConfigFromButton(Plugin.ConfigF, button));
+				colorConfigItems.Add(RadialMenuConfig.ColorConfigFromButton(Plugin.ConfigF, button));
+			}
+
+			// Adding the items to the Config manually
+			foreach (TextInputFieldConfigItem item in displayTextConfigItems)
+			{
+				LethalConfigManager.AddConfigItem(item);
+			}
+
+			// Adding the items to the Config manually
+			foreach (IntSliderConfigItem[] arr in colorConfigItems)
+			{
+				foreach (IntSliderConfigItem item in arr)
+				{
+					LethalConfigManager.AddConfigItem(item);
+				}
 			}
 
 			RadialMenuManager.MainMenu.AddRadialButton(new RadialMenu.RadialButton(defaultMenu));

@@ -13,10 +13,9 @@ using LethalConfig.ConfigItems;
 using LethalConfig.ConfigItems.Options;
 using LethalConfig;
 
-using QuickChat.RadialMenu;
 using UnityEngine.InputSystem.LowLevel;
 
-namespace QuickChat
+namespace QuickChat.RadialMenu
 {
 	public class RadialMenuConfig
 	{
@@ -224,16 +223,23 @@ namespace QuickChat
 			catch { }
 		}
 
-		public static void ColorConfigFromButton(RadialMenu.RadialMenu.RadialButton radialButton)
+		/// <summary>
+		/// Gives you an array of InputSliders which correspond to the different RGBA values of a button.
+		/// You have to add this to your LethalConfigManager yourself.
+		/// </summary>
+		/// <param name="ConfigF">Your config file</param>
+		/// <param name="radialButton">The button to reference</param>
+		/// <returns>An array of InputSliders which correspond to the different RGBA values of a button</returns>
+		public static IntSliderConfigItem[] ColorConfigFromButton(ConfigFile ConfigF, RadialMenu.RadialButton radialButton)
 		{
-			RadialMenu.RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
+			RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
 
 			ConfigEntry<int>[] colorValues = new ConfigEntry<int>[4]
 			{
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color R", ConvertToRGB32(radialButton.buttonColor.r), "The Red of the RadialButton Color"),
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color G", ConvertToRGB32(radialButton.buttonColor.g), "The Green of the RadialButton Color"),
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color B", ConvertToRGB32(radialButton.buttonColor.b), "The Blue of the RadialButton Color"),
-				Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color A", ConvertToRGB32(radialButton.buttonColor.a), "The Alpha (Transparency) of the RadialButton Color")
+				ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color R", ConvertToRGB32(radialButton.buttonColor.r), "The Red of the RadialButton Color"),
+				ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color G", ConvertToRGB32(radialButton.buttonColor.g), "The Green of the RadialButton Color"),
+				ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color B", ConvertToRGB32(radialButton.buttonColor.b), "The Blue of the RadialButton Color"),
+				ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Color A", ConvertToRGB32(radialButton.buttonColor.a), "The Alpha (Transparency) of the RadialButton Color")
 			};
 
 			var colorValuesOptions = new IntSliderOptions()
@@ -267,17 +273,21 @@ namespace QuickChat
 				radialButton.buttonColor = new Color(radialButton.buttonColor.r, radialButton.buttonColor.g, radialButton.buttonColor.b, ConvertToRGB(colorValues[3].Value));
 			};
 
-			LethalConfigManager.AddConfigItem(colorValuesFieldR);
-			LethalConfigManager.AddConfigItem(colorValuesFieldG);
-			LethalConfigManager.AddConfigItem(colorValuesFieldB);
-			LethalConfigManager.AddConfigItem(colorValuesFieldA);
+			return new IntSliderConfigItem[4] {colorValuesFieldR, colorValuesFieldG, colorValuesFieldB, colorValuesFieldA};
 		}
 
-		public static void DisplayTextConfigFromButton(RadialMenu.RadialMenu.RadialButton radialButton)
+		/// <summary>
+		/// Gives you a text field which corresponds to the DisplayText of a button.
+		/// You have to add this to your LethalConfigManager yourself.
+		/// </summary>
+		/// <param name="ConfigF">Your config file</param>
+		/// <param name="radialButton">The button to reference</param>
+		/// <returns>A text field which corresponds to the DisplayText of a button</returns>
+		public static TextInputFieldConfigItem DisplayTextConfigFromButton(ConfigFile ConfigF, RadialMenu.RadialButton radialButton)
 		{
-			RadialMenu.RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
+			RadialMenu connectingMenu = radialButton.connectingRadialMenu.Invoke();
 
-			ConfigEntry<string> displayTextValue = Plugin.ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Display Text", radialButton.displayText, "The Display Text of the Radial Button");
+			ConfigEntry<string> displayTextValue = ConfigF.Bind($"{connectingMenu.name} RadialMenu Options", "Display Text", radialButton.displayText, "The Display Text of the Radial Button");
 
 			var displayTextField = new TextInputFieldConfigItem(displayTextValue, requiresRestart: false);
 			displayTextValue.SettingChanged += (obj, args) =>
@@ -286,7 +296,7 @@ namespace QuickChat
 				radialButton.displayText = displayTextValue.Value;
 			};
 
-			LethalConfigManager.AddConfigItem(displayTextField);
+			return displayTextField;
 		}
 
 		private static int ConvertToRGB32(float colorValue)
