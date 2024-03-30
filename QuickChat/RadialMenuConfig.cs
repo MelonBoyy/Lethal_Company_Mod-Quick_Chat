@@ -18,7 +18,7 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace QuickChat
 {
-	internal class RadialMenuConfig
+	public class RadialMenuConfig
 	{
 
 		internal static ConfigEntry<bool> QuickChatRadialMenuToggleUseMouse;
