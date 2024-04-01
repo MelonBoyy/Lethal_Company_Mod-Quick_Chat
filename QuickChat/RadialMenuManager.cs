@@ -309,7 +309,7 @@ namespace QuickChat.RadialMenu
 
 		internal static void SendChatText()
 		{
-			char punctuation = (char)MostRecentButton.punctuation?.Invoke();
+			string punctuation = (string)MostRecentButton.punctuation?.Invoke();
 			string wholeText = JoinChatText();
 			wholeText = wholeText.CapitalizeFirstChar() + punctuation;
 

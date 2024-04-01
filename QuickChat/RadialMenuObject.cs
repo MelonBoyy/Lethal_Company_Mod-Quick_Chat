@@ -236,8 +236,8 @@ namespace QuickChat.RadialMenu
 				}
 			}
 
-			private Func<char> m_punctuation = () => '.';
-			public Func<char> punctuation
+			private Func<string> m_punctuation = () => ".";
+			public Func<string> punctuation
 			{
 				get { return m_punctuation; }
 				set { m_punctuation = value; }
@@ -298,6 +298,8 @@ namespace QuickChat.RadialMenu
 				}
 			}
 
+			public bool useTextColorOnChat = false;
+
 			public RadialMenu parentRadialMenu;
 			public Func<RadialMenu> connectingRadialMenu = null;
 
@@ -339,6 +341,17 @@ namespace QuickChat.RadialMenu
 				textField.enableWordWrapping = true;
 			}
 
+			internal void SetTextColorOnChat()
+			{
+				if (!useTextColorOnChat) return;
+
+				string color = ColorUtility.ToHtmlStringRGBA(textColor);
+				string oldText = text;
+
+				text = $"<color=#{color}>{oldText}</color>";
+				text.Trim();
+			}
+
 			internal void SetupRadialButton(RadialMenu parentRadialMenu)
 			{
 				if (created) return;
@@ -364,6 +377,7 @@ namespace QuickChat.RadialMenu
 				button.onClick.AddListener(OnClick);
 
 				text = text.Trim();
+				SetTextColorOnChat();
 
 				rectTransform = button.transform as RectTransform;
 				rectTransform.sizeDelta = sizeDelta;
@@ -444,7 +458,7 @@ namespace QuickChat.RadialMenu
 			{
 				this.text = text;
 				this.displayText = $"\"{text}{punctuation}\"";
-				this.punctuation = () => punctuation;
+				this.punctuation = () => punctuation.ToString();
 			}
 
 			/// <summary>
@@ -470,6 +484,20 @@ namespace QuickChat.RadialMenu
 			}
 
 			/// <summary>
+			/// Creates a RadialButton with specified text, a specified punctuation mark, and a specified color. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text the button should contain.</param>
+			/// <param name="punctuation">The punctuation mark the button should use.</param>
+			/// <param name="buttonColor">The color that the button should be.</param>
+			public RadialButton(string text, char punctuation, Color buttonColor)
+			{
+				this.text = text;
+				this.displayText = $"\"{text}{punctuation}\"";
+				this.punctuation = () => punctuation.ToString();
+				this.buttonColor = buttonColor;
+			}
+
+			/// <summary>
 			/// Creates a RadialButton with specified text, specified display text that should appear on the button, and another specified menu that the button should connect to. Recommended use of an initializer {}
 			/// </summary>
 			/// <param name="text">The text that the button should contain.</param>
@@ -480,6 +508,19 @@ namespace QuickChat.RadialMenu
 				this.text = text;
 				this.displayText = displayText;
 				this.connectingRadialMenu = () => connectingRadialMenu;
+			}
+
+			/// <summary>
+			/// Creates a RadialButton with specified text, specified display text that should appear on the button, and a specified punctuation mark. Recommended use of an initializer {}
+			/// </summary>
+			/// <param name="text">The text that the button should contain.</param>
+			/// <param name="displayText">The display text that should appear on the button.</param>
+			/// <param name="punctuation">The punctuation mark the button should use.</param>
+			public RadialButton(string text, string displayText, string punctuation)
+			{
+				this.text = text;
+				this.displayText = displayText;
+				this.punctuation = () => punctuation;
 			}
 
 		}
