@@ -32,6 +32,8 @@ namespace QuickChat.RadialMenu
 		internal static ConfigEntry<int> QuickChatRadialMenuRecentTextMinSize;
 		internal static ConfigEntry<int> QuickChatRadialMenuRecentTextMaxSize;
 
+		internal static ConfigEntry<bool> QuickChatRadialMenuUseColoredText;
+
 		internal static void Init()
 		{
 			Binds();
@@ -80,11 +82,15 @@ namespace QuickChat.RadialMenu
 				RadialMenuHUD.RadialMenuHUDRecentText.fontSizeMax = QuickChatRadialMenuRecentTextMaxSize.Value;
 			};
 
+			QuickChatRadialMenuUseColoredText = Plugin.ConfigF.Bind("Radial Menu Compatibility", "Radial Menu Text Use Color in Chat", true, "If the RadialMenu text should use colored text in chat.");
+			var quickChatRadialMenuUseColoredTextField = new BoolCheckBoxConfigItem(QuickChatRadialMenuUseColoredText, true);
 
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuBackgroundAlphaField);
 
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuRecentTextMinSizeField);
 			LethalConfigManager.AddConfigItem(quickChatRadialMenuRecentTextMaxSizeField);
+
+			LethalConfigManager.AddConfigItem(quickChatRadialMenuUseColoredTextField);
 		}
 
 		internal static void Binds()

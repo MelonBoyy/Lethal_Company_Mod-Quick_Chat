@@ -343,7 +343,7 @@ namespace QuickChat.RadialMenu
 
 			internal void SetTextColorOnChat()
 			{
-				if (!useTextColorOnChat) return;
+				if (!useTextColorOnChat || !RadialMenuConfig.QuickChatRadialMenuUseColoredText.Value) return;
 
 				string color = ColorUtility.ToHtmlStringRGBA(textColor);
 				string oldText = text;
